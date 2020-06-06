@@ -76,7 +76,7 @@ public class Kangaroo{
         }
     }
     
-    public boolean moveByPoint(){
+    public void moveByPoint(){
         int food_required=0;
         PointNode destination=point;
         Path pathNode=point.getPathLink();
@@ -104,10 +104,7 @@ public class Kangaroo{
         }
         if(destination!=point){
             movement(destination,food_required);
-            return true;
         }
-        else
-            return false;
     }
     
     public boolean ableToMove(Path pathNode){
@@ -122,7 +119,7 @@ public class Kangaroo{
         return true;
     }
     
-    public boolean moveByWholePoint(){
+    public void moveByWholePoint(){
         PointNode destination=point;
         Path pathNode=point.getPathLink();
         while(pathNode!=null){
@@ -169,10 +166,7 @@ public class Kangaroo{
             getShortestPath(destination);
             if(!path.isEmpty())
                 wholeMovement();
-            return true;
         }
-        else
-            return false;
     }
     
     public void computePath(PointNode from){
