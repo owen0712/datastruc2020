@@ -137,7 +137,7 @@ public class JumpyGrof extends JPanel implements ActionListener{
         loop=r.nextInt(pointlist.size()*5);
         for(int i=0;i<loop;i++){
             String location=pointlist.get(r.nextInt(pointlist.size()));
-            char gender=r.nextInt(1)>0?'M':'F';
+            char gender=r.nextInt(2)>0?'M':'F';
             int food=r.nextInt(13);
             kangaroo.add(new Kangaroo(point.hasPoint(location),gender,food));
         }
