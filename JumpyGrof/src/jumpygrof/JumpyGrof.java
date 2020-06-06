@@ -32,7 +32,7 @@ public class JumpyGrof extends JPanel implements ActionListener{
         String ans="";
         do{
         System.out.println("You want to input (enter i) or random generated (enter r) : ");
-        ans=s.nextLine();
+        ans=s.next();
         if(ans.equalsIgnoreCase("i"))
             input();
         else if(ans.equalsIgnoreCase("r"))
@@ -55,8 +55,7 @@ public class JumpyGrof extends JPanel implements ActionListener{
                 else if(kangaroo.get(i).getGender()=='F')
                     kangaroos--;
                 else
-                    if(!kangaroo.get(i).moveByWholePoint())
-                        kangaroos--;
+                    kangaroo.get(i).moveByWholePoint();
             }
             if(kangaroos==0)
                 break;
@@ -75,7 +74,7 @@ public class JumpyGrof extends JPanel implements ActionListener{
         
         System.out.print("Enter number of point : ");
         int loop=s.nextInt();
-        for(int i=0;i<loop;i++){
+        for(int i=1;i<=loop;i++){
             System.out.print("Enter ID of point : ");
             String ID=s.nextInt()+"";
             System.out.print("Enter food in point "+ID+" : ");
@@ -119,12 +118,12 @@ public class JumpyGrof extends JPanel implements ActionListener{
         Random r=new Random();
         LinkedList<String>pointlist=new LinkedList();
         
-        int loop=r.nextInt(20);
-        for(int i=0;i<loop;i++){
-            String ID=(r.nextInt(20)+1)+"";
+        int loop=r.nextInt(10)+1;
+        for(int i=1;i<=loop;i++){
+            String ID=i+"";
             pointlist.add(ID);
-            int food=r.nextInt(10)+10;
-            int kangaroo_limit=r.nextInt(25);
+            int food=r.nextInt(100)+100;
+            int kangaroo_limit=r.nextInt(25)+1;
             point.addPoint(ID,food,kangaroo_limit);
         }
         
@@ -134,14 +133,14 @@ public class JumpyGrof extends JPanel implements ActionListener{
                 point.addPath(ID, pointlist.get(r.nextInt(pointlist.size())), r.nextInt(15)+1);
         }
         
-        loop=r.nextInt(pointlist.size()*5);
+        loop=r.nextInt(10)+1;
         for(int i=0;i<loop;i++){
             String location=pointlist.get(r.nextInt(pointlist.size()));
             char gender=r.nextInt(2)>0?'M':'F';
-            int food=r.nextInt(13);
+            int food=r.nextInt(13)+1;
             kangaroo.add(new Kangaroo(point.hasPoint(location),gender,food));
         }
-        int colony_limit=r.nextInt(10);
+        int colony_limit=r.nextInt(1)+3;
         point.setThreshold(colony_limit);
     }
     
