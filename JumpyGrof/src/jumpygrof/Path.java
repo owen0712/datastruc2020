@@ -13,14 +13,13 @@ import javax.swing.ImageIcon;
  * @author USER
  */
 public class Path<E>{
-    private PointNode pointLink;
+    private Point pointLink;
     private Path pathLink;
     private E obstacle_height;
     private boolean back;
     private final Image low = new ImageIcon("Low.png").getImage();
     private final Image middle = new ImageIcon("Middle.png").getImage();
     private final Image high = new ImageIcon("High.png").getImage();
-    private Path previous;
 
     public Path() {
         pointLink=null;
@@ -28,16 +27,16 @@ public class Path<E>{
         obstacle_height=null;
     }
 
-    public Path(PointNode pointLink, E obstacle_height, Path pathLink,boolean back) {
+    public Path(Point pointLink, E obstacle_height, Path pathLink,boolean back) {
         this.pointLink = pointLink;
         this.pathLink = pathLink;
         this.obstacle_height = obstacle_height;
         this.back=back;
     }
 
-    public PointNode getPointLink() {return pointLink;}
+    public Point getPointLink() {return pointLink;}
 
-    public void setPointLink(PointNode pointLink) {this.pointLink = pointLink;}
+    public void setPointLink(Point pointLink) {this.pointLink = pointLink;}
 
     public Path getPathLink() {return pathLink;}
 
@@ -60,11 +59,11 @@ public class Path<E>{
 
     public void setBack(boolean back) {this.back = back;}
     
-    public int getFoodRequired(Kangaroo kangaroo){
-        return (int)((Integer)obstacle_height+0.5*kangaroo.getFoodAvailable());
+    public int getFoodRequired(int foodInPouch){
+        return (int)((Integer)obstacle_height+0.5*foodInPouch);
     }
     
-    public int getRemainingFood(Kangaroo kangaroo){
-        return pointLink.getFood()-getFoodRequired(kangaroo);
+    public int getRemainingFood(int foodInPouch){
+        return pointLink.getFood()-getFoodRequired(foodInPouch);
     }
 }
