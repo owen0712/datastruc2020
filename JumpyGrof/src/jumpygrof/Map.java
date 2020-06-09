@@ -12,17 +12,17 @@ package jumpygrof;
  */
 import java.util.*;
 
-public class Point<V extends Comparable<V>,E>{
-    private PointNode head;
+public class Map<V extends Comparable<V>,E>{
+    private Point head;
     private Random r;
 
-    public Point(){head=null;}
+    public Map(){head=null;}
     
     public boolean isEmpty(){return head==null;}
     
     public int getSize(){
         int count=0;
-        PointNode currentNode=head;
+        Point currentNode=head;
         while(currentNode!=null){
             currentNode=currentNode.getPointLink();
             count++;
@@ -32,8 +32,8 @@ public class Point<V extends Comparable<V>,E>{
     
     public void clear(){head=null;}
     
-    public PointNode hasPoint(V ID){
-        PointNode currentNode=head;
+    public Point hasPoint(V ID){
+        Point currentNode=head;
         if(isEmpty())
             return null;
         while(currentNode!=null){
@@ -45,11 +45,11 @@ public class Point<V extends Comparable<V>,E>{
     }
     
     public void addPoint(String ID, int food,int limit){
-        PointNode newNode=new PointNode(ID,food,limit);
+        Point newNode=new Point(ID,food,limit);
         if(head==null)
             head=newNode;
         else{
-            PointNode currentNode=head;
+            Point currentNode=head;
             while(currentNode.getPointLink()!=null)
                 currentNode=currentNode.getPointLink();
             currentNode.setPointLink(newNode);
@@ -99,10 +99,10 @@ public class Point<V extends Comparable<V>,E>{
         else if(isPath(from,to))
             System.out.println("The path is existed");
         else{
-            PointNode currentNode=head;
+            Point currentNode=head;
             while(currentNode!=null){
                 if(from.compareTo((V)currentNode.getID())==0){
-                    PointNode temp=hasPoint(to);
+                    Point temp=hasPoint(to);
                     Path newNode=isPath(to,from)?new Path(temp,obstacles_height,null,true):new Path(temp,obstacles_height,null,false);
                     Path pathNode=(Path)currentNode.getPathLink();
                     if(pathNode==null)
@@ -125,10 +125,10 @@ public class Point<V extends Comparable<V>,E>{
         if(hasPoint(from)==null||hasPoint(to)==null)
             return false;
         else{
-            PointNode currentNode=head;
+            Point currentNode=head;
             while(currentNode!=null){
                 if(from.compareTo((V)currentNode.getID())==0){
-                    PointNode temp=hasPoint(to);
+                    Point temp=hasPoint(to);
                     Path pathNode=currentNode.getPathLink();
                     if(pathNode==null)
                         return false;
@@ -147,7 +147,7 @@ public class Point<V extends Comparable<V>,E>{
     }
     
     public void setThreshold(int threshold){
-        PointNode currentNode=head;
+        Point currentNode=head;
         while(currentNode!=null){
             currentNode.setColony_limit(threshold);
             currentNode=currentNode.getPointLink();
@@ -156,7 +156,7 @@ public class Point<V extends Comparable<V>,E>{
     
     public int getColonies(){
         int colonies=0;
-        PointNode currentNode=head;
+        Point currentNode=head;
         while(currentNode!=null){
             if(currentNode.isColonised())
                 colonies++;
@@ -167,19 +167,19 @@ public class Point<V extends Comparable<V>,E>{
     
     public int getColonyLimit(){return head.getColonyLimit();}
     
-    public PointNode get(int index){
+    public Point get(int index){
         if(index==0)
             return head;
         else{
-            PointNode currentNode=head;
+            Point currentNode=head;
             for(int i=1;i<=index;i++)
                 currentNode=currentNode.getPointLink();
             return currentNode;
         }
     }
     
-    public void checkOverlapped(PointNode checkNode){
-        PointNode currentNode=head;
+    public void checkOverlapped(Point checkNode){
+        Point currentNode=head;
         boolean separated=true;
         while(currentNode!=null){
             if(currentNode!=checkNode){
@@ -193,4 +193,6 @@ public class Point<V extends Comparable<V>,E>{
             currentNode=currentNode.getPointLink();
         }
     }
+    
+    
 }
