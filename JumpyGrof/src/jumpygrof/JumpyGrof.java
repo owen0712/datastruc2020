@@ -22,7 +22,7 @@ public class JumpyGrof extends JPanel implements ActionListener{
      * @param args the command line arguments
      */
     static Scanner s=new Scanner(System.in);
-    static Point<String,Integer> point=new Point();
+    public static Map<String,Integer> map=new Map();
     static LinkedList<Kangaroo>kangaroo=new LinkedList();
     Image background=new ImageIcon("background.jpg").getImage();
     static boolean run=false;
@@ -47,6 +47,7 @@ public class JumpyGrof extends JPanel implements ActionListener{
         while(true){
             colonized=0;
             int kangaroos=kangaroo.size();
+            
             for(int i=0;i<kangaroo.size();i++){
                 if(kangaroo.get(i).isColonised()){
                     colonized++;
@@ -55,12 +56,13 @@ public class JumpyGrof extends JPanel implements ActionListener{
                 else if(kangaroo.get(i).getGender()=='F')
                     kangaroos--;
                 else
-                    kangaroo.get(i).moveByWholePoint();
+                    if(!kangaroo.get(i).moveByWholePoint())
+                        kangaroos--;
             }
             if(kangaroos==0)
                 break;
         }
-        System.out.println("Number of colonies:"+point.getColonies());
+        System.out.println("Number of colonies:"+map.getColonies());
         System.out.println("Number of remaining kangaroos:"+(kangaroo.size()-colonized));
         for(int i=0;i<kangaroo.size();i++)
             if(!kangaroo.get(i).isColonised())
@@ -81,7 +83,7 @@ public class JumpyGrof extends JPanel implements ActionListener{
             int food=s.nextInt();
             System.out.print("Enter number of kangaroo limit in point "+ID+" : ");
             int kangaroo_limit=s.nextInt();
-            point.addPoint(ID,food,kangaroo_limit);
+            map.addPoint(ID,food,kangaroo_limit);
             System.out.print("Enter number of path connect to point "+ID+" : ");
             int path=s.nextInt();
             for(int j=0;j<path;j++){
@@ -94,7 +96,7 @@ public class JumpyGrof extends JPanel implements ActionListener{
         }
         
         for(int i=0;i<source.size();i++){
-            point.addPath(source.get(i), destination.get(i), obstacles.get(i));
+            map.addPath(source.get(i), destination.get(i), obstacles.get(i));
         }
         
         System.out.print("Enter number of kangaroo : ");
@@ -106,42 +108,42 @@ public class JumpyGrof extends JPanel implements ActionListener{
             char gender=s.next().charAt(0);
             System.out.print("Enter food limit in pouch of kangaroo : ");
             int food=s.nextInt();
-            kangaroo.add(new Kangaroo(point.hasPoint(location),gender,food));
+            kangaroo.add(new Kangaroo(map.hasPoint(location),gender,food));
         }
         
         System.out.print("Enter the colony limit of point : ");
         int colony_limit=s.nextInt();
-        point.setThreshold(colony_limit);
+        map.setThreshold(colony_limit);
     }
     
     public static void random(){
         Random r=new Random();
         LinkedList<String>pointlist=new LinkedList();
         
-        int loop=r.nextInt(10)+1;
+        int loop=r.nextInt(10)+2;
         for(int i=1;i<=loop;i++){
             String ID=i+"";
             pointlist.add(ID);
-            int food=r.nextInt(100)+100;
-            int kangaroo_limit=r.nextInt(25)+1;
-            point.addPoint(ID,food,kangaroo_limit);
+            int food=r.nextInt(100)+50;
+            int kangaroo_limit=r.nextInt(25)+2;
+            map.addPoint(ID,food,kangaroo_limit);
         }
         
         for(String ID:pointlist){
             int path=r.nextInt(pointlist.size());
             for(int j=0;j<path;j++)
-                point.addPath(ID, pointlist.get(r.nextInt(pointlist.size())), r.nextInt(15)+1);
+                map.addPath(ID, pointlist.get(r.nextInt(pointlist.size())), r.nextInt(15)+1);
         }
         
-        loop=r.nextInt(10)+1;
+        loop=r.nextInt(10)+3;
         for(int i=0;i<loop;i++){
             String location=pointlist.get(r.nextInt(pointlist.size()));
             char gender=r.nextInt(2)>0?'M':'F';
             int food=r.nextInt(13)+1;
-            kangaroo.add(new Kangaroo(point.hasPoint(location),gender,food));
+            kangaroo.add(new Kangaroo(map.hasPoint(location),gender,food));
         }
         int colony_limit=r.nextInt(1)+3;
-        point.setThreshold(colony_limit);
+        map.setThreshold(colony_limit);
     }
     
     public JumpyGrof(){
@@ -166,8 +168,8 @@ public class JumpyGrof extends JPanel implements ActionListener{
     public void paint(Graphics g){
         super.paintComponent(g);
         g.drawImage(background,0,0,getWidth(),getHeight(),this);
-        for(int i=0;i<point.getSize();i++)
-            point.get(i).paint(g);
+        for(int i=0;i<map.getSize();i++)
+            map.get(i).paint(g);
         for(int i=0;i<kangaroo.size();i++)
             kangaroo.get(i).paint(g);
     }
