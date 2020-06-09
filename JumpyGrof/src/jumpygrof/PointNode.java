@@ -15,14 +15,14 @@ import java.awt.event.ActionListener;
 import java.util.*;
 import javax.swing.*;
 
-public class PointNode<V,E> implements ActionListener{
+public class Point<V,E> implements ActionListener{
     Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
     int width=(int)screenSize.getWidth();
     int height =(int)screenSize.getHeight();
     private V ID;
     private int food,kangaroo_limit,x,y,female,colony_limit,colony_food,time,food_limit;
     private int minDistance;
-    private PointNode pointLink,head;
+    private Point pointLink,head;
     private Path pathLink,nextpath;
     private boolean depleted,colonised;
     private Random r;
@@ -31,7 +31,7 @@ public class PointNode<V,E> implements ActionListener{
     private final Image depleted_point=new ImageIcon("depleted_point.png").getImage();
     private javax.swing.Timer timer;
 
-    public PointNode(V ID, int food,int kangaroo_limit){
+    public Point(V ID, int food,int kangaroo_limit){
         this.ID=ID;
         this.food=food;
         this.food_limit=food;
@@ -82,17 +82,17 @@ public class PointNode<V,E> implements ActionListener{
 
     public LinkedList<Kangaroo> getKangaroo() {return kangaroo;}
 
-    public PointNode getPointLink() {return pointLink;}
+    public Point getPointLink() {return pointLink;}
 
-    public void setPointLink(PointNode pointLink) {this.pointLink = pointLink;}    
+    public void setPointLink(Point pointLink) {this.pointLink = pointLink;}    
 
     public void setColony_limit(int colony_limit) {this.colony_limit = colony_limit;}
 
     public boolean isColonised() {return colonised;}
 
-    public PointNode getHead() {return head;}
+    public Point getHead() {return head;}
 
-    public void setHead(PointNode head) {this.head = head;}
+    public void setHead(Point head) {this.head = head;}
 
     public int getMinDistance() {return minDistance;}
 
@@ -141,6 +141,23 @@ public class PointNode<V,E> implements ActionListener{
         }
     }
     
+    public void pointdetails(){
+        System.out.println("***********************");
+        System.out.println("Point : "+ID);
+        System.out.println("Food : "+food);
+        System.out.println("Number of kangaroo : "+kangaroo.size());
+        for(int i=0;i<kangaroo.size();i++){
+            System.out.println("    "+kangaroo.get(i).getGender()+" "+kangaroo.get(i).getFoodAvailable());
+        }
+        System.out.println("Colony : "+colonised);
+        System.out.println("Path : ");
+        while(pathLink!=null){
+            System.out.println("    "+pathLink.getPointLink().getID()+" "+pathLink.getObstacle_height());
+            pathLink=pathLink.getPathLink();
+        }
+        System.out.println("***********************");
+    }
+    
     public void paint(Graphics g){
         g.setFont(new Font("TimesRoman",Font.PLAIN,36));
         Path pathNode=pathLink;
@@ -171,10 +188,10 @@ public class PointNode<V,E> implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        time++;
+        /*time++;
         if(time%100==0&&food<=food_limit)
             food++;
         if(food>0)
-            depleted=false;
+            depleted=false;*/
     }
 }
