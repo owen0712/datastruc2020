@@ -10,8 +10,7 @@ package jumpygrof;
  * @author USER
  */
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 
@@ -20,10 +19,9 @@ public class Point<V,E> implements ActionListener{
     int width=(int)screenSize.getWidth();
     int height =(int)screenSize.getHeight();
     private V ID;
-    private int food,kangaroo_limit,x,y,female,colony_limit,colony_food,time,food_limit;
-    private int minDistance;
+    private int food,kangaroo_limit,x,y,female,colony_limit,colony_food,time,food_limit,path;
     private Point pointLink,head;
-    private Path pathLink,nextpath;
+    private Path pathLink;
     private boolean depleted,colonised;
     private Random r;
     private LinkedList<Kangaroo>kangaroo;
@@ -31,11 +29,12 @@ public class Point<V,E> implements ActionListener{
     private final Image depleted_point=new ImageIcon("depleted_point.png").getImage();
     private javax.swing.Timer timer;
 
-    public Point(V ID, int food,int kangaroo_limit){
+    public Point(V ID, int food,int kangaroo_limit,int path){
         this.ID=ID;
         this.food=food;
         this.food_limit=food;
         this.kangaroo_limit=kangaroo_limit;
+        this.path=path;
         depleted=false;
         colonised=false;
         r=new Random();
@@ -45,8 +44,6 @@ public class Point<V,E> implements ActionListener{
         setCoordinate();
         timer=new javax.swing.Timer(5,this);
         timer.restart();
-        minDistance=Integer.MAX_VALUE;
-        nextpath=null;
     }
     
     public void setCoordinate(){
@@ -66,6 +63,10 @@ public class Point<V,E> implements ActionListener{
             depleted=true;
     }
 
+    public int getPath() {return path;}
+
+    public void setPath(int path) {this.path = path;}
+    
     public int getFemale() {return female;}
 
     public int getX() {return x;}
@@ -82,6 +83,8 @@ public class Point<V,E> implements ActionListener{
 
     public LinkedList<Kangaroo> getKangaroo() {return kangaroo;}
 
+    public int getKangaroo_limit() {return kangaroo_limit;}
+
     public Point getPointLink() {return pointLink;}
 
     public void setPointLink(Point pointLink) {this.pointLink = pointLink;}    
@@ -93,14 +96,6 @@ public class Point<V,E> implements ActionListener{
     public Point getHead() {return head;}
 
     public void setHead(Point head) {this.head = head;}
-
-    public int getMinDistance() {return minDistance;}
-
-    public void setMinDistance(int minDistance) {this.minDistance = minDistance;}
-
-    public Path getNextpath() {return nextpath;}
-
-    public void setNextpath(Path nextpath) {this.nextpath = nextpath;}
     
     public boolean addKangaroo(Kangaroo newKangaroo){
         if(kangaroo.size()<=kangaroo_limit){
@@ -194,4 +189,5 @@ public class Point<V,E> implements ActionListener{
         if(food>0)
             depleted=false;*/
     }
+
 }
