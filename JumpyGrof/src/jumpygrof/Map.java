@@ -20,7 +20,7 @@ public class Map<V extends Comparable<V>,E>{
     
     public boolean isEmpty(){return head==null;}
     
-    public int getSize(){
+    public int size(){
         int count=0;
         Point currentNode=head;
         while(currentNode!=null){
@@ -44,8 +44,8 @@ public class Map<V extends Comparable<V>,E>{
         return null;
     }
     
-    public void addPoint(String ID, int food,int limit){
-        Point newNode=new Point(ID,food,limit);
+    public Point addPoint(String ID, int food,int limit,int path){
+        Point newNode=new Point(ID,food,limit,path);
         if(head==null)
             head=newNode;
         else{
@@ -56,6 +56,7 @@ public class Map<V extends Comparable<V>,E>{
         }
         checkOverlapped(newNode);
         newNode.setHead(head);
+        return newNode;
     }
     
     /*public boolean addPath(V from,V to,E obstacles_height,boolean back){
@@ -105,12 +106,15 @@ public class Map<V extends Comparable<V>,E>{
                     Point temp=hasPoint(to);
                     Path newNode=isPath(to,from)?new Path(temp,obstacles_height,null,true):new Path(temp,obstacles_height,null,false);
                     Path pathNode=(Path)currentNode.getPathLink();
-                    if(pathNode==null)
+                    if(pathNode==null){
                         currentNode.setPathLink(newNode);
+                        newNode.setSource(currentNode);
+                    }
                     else{
                         while(pathNode.getPathLink()!=null)
                             pathNode=pathNode.getPathLink();
                         pathNode.setPathLink(newNode);
+                        newNode.setSource(currentNode);
                     }
                     return true;
                 }
@@ -194,5 +198,11 @@ public class Map<V extends Comparable<V>,E>{
         }
     }
     
-    
+    public void mapdetails(){
+        Point currentNode=head;
+        while(currentNode!=null){
+            currentNode.pointdetails();
+            currentNode=currentNode.getPointLink();
+        }
+    }
 }
