@@ -20,6 +20,7 @@ public class Kangaroo{
     int width=(int)screenSize.getWidth();
     int height =(int)screenSize.getHeight();
     private Point point;
+    private final Map map=JumpyGrof.map;
     private int food_limit,food_available,x,y;
     private char gender;
     private boolean colonised,move,left;
@@ -59,6 +60,12 @@ public class Kangaroo{
     public void setColonised(boolean colonised) {this.colonised = colonised;}
 
     public boolean isColonised() {return colonised;}
+
+    public String getPoint() {return (String)point.getID();}
+
+    public int getFood_limit() {return food_limit;}
+    
+    
     
     @Override
     public String toString(){return point.getID()+" "+gender+" "+food_available;}
@@ -76,44 +83,28 @@ public class Kangaroo{
     }
     
     public boolean moveByPoint(){
-        int food_required=0;
         Point destination=point;
+        ArrayList<Path>path=new ArrayList<>();
         Path pathNode=point.getPathLink();
-        while(pathNode!=null){
-            if(!ableToMove(pathNode)){
-                pathNode=pathNode.getPathLink();
-                continue;
-            }
             
-            if(pathNode.getPointLink().getFood()>point.getFood()){
-                if(pathNode.getRemainingFood(food_available)>destination.getFood()){
-                    food_required=pathNode.getFoodRequired(food_available);
+        while(pathNode!=null){
+            if(ableToMove(pathNode)){
+                if(pathNode.getPointLink().getFood()>destination.getFood()){
+                    path.clear();
+                    path.add(pathNode);
                     destination=pathNode.getPointLink();
                 }
-                else if(pathNode.getRemainingFood(food_available)==destination.getFood()-food_required&&pathNode.getPointLink().getFemale()>destination.getFemale()){
-                    food_required=pathNode.getFoodRequired(food_available);
+                else if(pathNode.getPointLink().getFood()==destination.getFood()&&pathNode.getPointLink().getFemale()>destination.getFemale()){
+                    path.clear();
+                    path.add(pathNode);
                     destination=pathNode.getPointLink();
                 }
-                else if(pathNode.getRemainingFood(food_available)==0&&pathNode.getPointLink().getFemale()>destination.getFemale()){
-                    food_required=pathNode.getFoodRequired(food_available);
-                    destination=pathNode.getPointLink();
-                }
-                else if(pathNode.getRemainingFood(food_available)<=0&&destination==point){
-                    food_required=pathNode.getFoodRequired(food_available);
-                    destination=pathNode.getPointLink();
-                }
-            }
-            else{
-                if(destination.getFood()<pathNode.getPointLink().getFood())
-                    if(point.getFood()<=0&&pathNode.getPointLink().getFemale()>point.getFemale()){
-                        food_required=pathNode.getFoodRequired(food_available);
-                        destination=pathNode.getPointLink();
-                    }
             }
             pathNode=pathNode.getPathLink();
         }
+            
         if(destination!=point){
-            movement(destination,food_required);
+            movement(path);
             return true;
         }
         else
@@ -132,109 +123,42 @@ public class Kangaroo{
         return true;
     }
     
-    /*public void moveByWholePoint(){
-        PointNode destination=point;
-        Path pathNode=point.getPathLink();
-        while(pathNode!=null){
-            if(!ableToMove(pathNode)){
-                pathNode=pathNode.getPathLink();
-                continue;
-            }
-            
-            if(pathNode.getRemainingFood(this)>destination.getFood()){
-                destination=pathNode.getPointLink();
-            }
-            else if(pathNode.getRemainingFood(this)==destination.getFood()&&pathNode.getPointLink().getFemale()>destination.getFemale()){
-                destination=pathNode.getPointLink();
-            }
-            else{
-                if(point.getFood()<=0&&pathNode.getRemainingFood(this)+food_available>0){
-                    destination=pathNode.getPointLink();
-                }
-            }
-            pathNode=pathNode.getPathLink();
+    public boolean moveThroughMap(){
+        ArrayList<Point>option=new ArrayList<>();
+        for(int i=0;i<map.size();i++){
+            if(map.get(i).getFood()>point.getFood())
+                option.add(map.get(i));
         }
-        PointNode currentNode=point.getHead();
-        boolean isPath=false;
-        while(currentNode!=null){
-            if(currentNode!=point){
-                pathNode=point.getPathLink();
-                while(pathNode!=null){
-                    isPath = pathNode.getPointLink()!=currentNode;
-                    if(!isPath)
-                        break;
-                    pathNode=pathNode.getPathLink();
-                }
-                if(!isPath)
-                    if(currentNode.getFood()>destination.getFood())
-                        destination=currentNode;
-                    else if(currentNode.getFood()>destination.getFood()&&currentNode.getFemale()>=destination.getFemale())
-                        destination=currentNode;
-            }
-            currentNode=currentNode.getPointLink();
+        sort(option);
+        ArrayList<Path>path=new ArrayList<>();
+        for(int i=0;i<option.size();i++){
+            path=shortestPath(point,option.get(i));
+            if(path.size()!=0)
+                break;
         }
-        if(destination!=point){
-            path=new ArrayList<>();
-            computePath(point);
-            getShortestPath(destination);
-            if(!path.isEmpty())
-                wholeMovement();
-        }
-    }*/
-    
-    public boolean moveByWholePoint(){
-        Point destination=point;
-        Path pathNode=point.getPathLink();
-        while(pathNode!=null){
-            if(!ableToMove(pathNode)){
-                pathNode=pathNode.getPathLink();
-                continue;
-            }
-            
-            if(pathNode.getRemainingFood(food_available)>destination.getFood()){
-                destination=pathNode.getPointLink();
-            }
-            else if(pathNode.getRemainingFood(food_available)==destination.getFood()&&pathNode.getPointLink().getFemale()>destination.getFemale()){
-                destination=pathNode.getPointLink();
-            }
-            else{
-                if(point.getFood()<=0&&pathNode.getRemainingFood(food_available)+food_available>0){
-                    destination=pathNode.getPointLink();
-                }
-            }
-            pathNode=pathNode.getPathLink();
-        }
-        Point currentNode=point.getHead();
-        boolean isPath=false;
-        while(currentNode!=null){
-            if(currentNode!=point){
-                pathNode=point.getPathLink();
-                while(pathNode!=null){
-                    isPath = pathNode.getPointLink()!=currentNode;
-                    if(!isPath)
-                        break;
-                    pathNode=pathNode.getPathLink();
-                }
-                if(!isPath)
-                    if(currentNode.getFood()>destination.getFood())
-                        destination=currentNode;
-                    else if(currentNode.getFood()>destination.getFood()&&currentNode.getFemale()>=destination.getFemale())
-                        destination=currentNode;
-            }
-            currentNode=currentNode.getPointLink();
-        }
-        if(destination!=point){
-            ArrayList<Path> path=new ArrayList<>();
-            path=shortestPath(point,destination);
-            if(!path.isEmpty()){
-                wholeMovement(path);
-                return true;
-            }
-            else
-                return false;
+        if(!path.isEmpty()){
+            movement(path);
+            return true;
         }
         else
             return false;
+    }
+    
+    public void sort(ArrayList<Point>option){
+        for(int i=0;i<option.size();i++)
+            for(int j=0;j<option.size()-i-1;j++){
+                if(option.get(j).getFood()>option.get(j+1).getFood()&&option.get(j).getFemale()>option.get(j+1).getFemale()){
+                    Point temp=option.get(j);
+                    option.set(j, option.get(j+1));
+                    option.set(j+1, temp);
+                }
+                else if(option.get(j).getFood()>option.get(j+1).getFood()){
+                    Point temp=option.get(j);
+                    option.set(j, option.get(j+1));
+                    option.set(j+1, temp);
+                }
+            }
+        Collections.reverse(option);
     }
     
     ArrayList<ArrayList<Path>> pathList; 
@@ -249,56 +173,48 @@ public class Kangaroo{
     }
     
     public void shortestPath(Point from,Point to, Path pathNode, ArrayList<Point> visited,ArrayList<Path>travel) { 
-          
-        // Mark the current node 
+        
         visited.add(from); 
           
-        if (from==to)  
-        { 
+        if (from==to){ 
             pathList.add(new ArrayList<Path>());
             for(int i=0;i<travel.size();i++)
                 pathList.get(pathList.size()-1).add(travel.get(i));
-            // if match found then no need to traverse more till depth 
             visited.remove(from); 
             return ; 
         } 
-          
-        // Recur for all the vertices 
-        // adjacent to current vertex 
+        
         pathNode=from.getPathLink();
-        while(pathNode!=null)  
-        { 
-            if (!visited.contains(pathNode.getPointLink())) 
-            { 
-                // store current node  
-                // in path[] 
+        while(pathNode!=null){ 
+            if (!visited.contains(pathNode.getPointLink())) { 
                 travel.add(pathNode); 
                 shortestPath(pathNode.getPointLink(), to, pathNode, visited, travel); 
-                  
-                // remove current node 
-                // in path[] 
+                
                 travel.remove(pathNode); 
             } 
             pathNode=pathNode.getPathLink();
         } 
-          
-        // Mark the current node 
+        
         visited.remove(from); 
     } 
     
     public ArrayList<Path> optimumPath(){
-        int food=food_available;
-        int maxFood=0,maxdistance=Integer.MIN_VALUE;
-        int totalFood,distance;
+        int food,totalFood,distance;
+        int maxFood=-1,maxdistance=Integer.MIN_VALUE;
+        boolean end=false;
         ArrayList<Path>optimum=new ArrayList<>();
         for(ArrayList<Path>option:pathList){
             distance=option.size();
             totalFood=0;
+            end=true;
+            food=food_available;
             for(Path path:option){
                 int remainingFood=path.getRemainingFood(food);
                 
-                if(remainingFood<0||remainingFood<0&&food+remainingFood<0)
+                if(path.getPointLink().getFood()==point.getFood()&&remainingFood<0&&food+remainingFood<0){
+                    end=false;
                     break;
+                }
                 else if(remainingFood<0&&food+remainingFood>0){
                     food+=remainingFood;
                     remainingFood=0;
@@ -306,59 +222,28 @@ public class Kangaroo{
                 
                 totalFood+=remainingFood;
             }
-            if(totalFood>maxFood||totalFood==maxFood&&distance<maxdistance){
-                maxdistance=distance;
-                maxFood=totalFood;
-                optimum=option;
+            if(end){
+                if(totalFood>maxFood||totalFood==maxFood&&distance<maxdistance){
+                    maxdistance=distance;
+                    maxFood=totalFood;
+                    optimum=option;
+                }
             }
-                
         }
         return optimum;
     }
     
-    /*public void computePath(PointNode from){
-        from.setMinDistance(0);
-        Queue<PointNode>queue=new LinkedList<>();
-        queue.add(from);
-        while(!queue.isEmpty()){
-            PointNode previous=queue.poll();
-            Path pathNode=previous.getPathLink();
-            while(pathNode!=null){
-                PointNode next=pathNode.getPointLink();
-                int height=(Integer)pathNode.getObstacle_height();
-                int total_distance=(Integer)previous.getMinDistance()+height;
-                if(total_distance<next.getMinDistance()){
-                    queue.remove(pathNode.getPointLink());
-                    next.setMinDistance(total_distance);
-                    previous.setNextpath(pathNode);
-                    queue.add(next);
-                }
-                pathNode=pathNode.getPathLink();
-            }
-        }
-    }
-    
-    public void getShortestPath(PointNode to){
-        ArrayList<Path>selected_path=new ArrayList();
-        for(Path location=point.getNextpath();location!=null;location=location.getPointLink().getNextpath())
-            selected_path.add(location);
-        path=selected_path;
-    }*/
-    
-    public void wholeMovement(ArrayList<Path> path){
-        int g=10,u=-5;
-        double t=0.5;
+    public void movement(ArrayList<Path> path){
         for(int i=0;i<path.size();i++){
+            if(colonised)
+                break;
+            System.out.println("Moving from "+point.getID()+" to "+path.get(i).getPointLink().getID());
             Point destination=path.get(i).getPointLink();
             int food_required=path.get(i).getFoodRequired(food_available);
             if(destination.isColonised())
                 food_required+=destination.getKangaroo().size();
             
-            //if kangaroo can't take its point food,then like this
-            while(destination.getFood()+food_available<food_required){System.out.println("Waiting");}
-            
             if(destination.addKangaroo(this)){
-                boolean jump=true;
                 move=true;
                 point.removeKangaroo(this);
                 point=destination;
@@ -387,39 +272,6 @@ public class Kangaroo{
             }
             if(colonised)
                 break;
-        }
-    }
-    
-    public void movement(Point destination,int food_required){
-        System.out.println("Moving from "+point.getID()+" to "+destination.getID());
-        int g=10,u=-10;
-        double t=0.5;
-        if(destination.addKangaroo(this)){
-            boolean jump=true;
-            move=true;
-            point.removeKangaroo(this);
-            point=destination;
-            int destination_x=point.getX()+20+point.getKangaroo().size()*20;
-            int destination_y=point.getY()+20+point.getKangaroo().size()*20;
-            int xchange=(Math.abs(destination_x-x)>100)?(destination_x-x)/60:(destination_x-x)/80;
-            int ychange=(Math.abs(destination_y-y)>90)?(destination_y-y)/60:(destination_y-y)/80;
-            left=x-point.getX()>0;
-            while(true){
-                x+=xchange;
-                y+=ychange;
-
-                try{
-                   Thread.sleep(80);
-                }catch(InterruptedException e){};
-
-                if((x-destination_x)<50&&(y-destination_y)<50)
-                    break;
-                }
-            move=false;
-            x=destination_x;
-            y=destination_y;
-            consumeFood(food_required);
-            point.checkColonised();
         }
     }
     
