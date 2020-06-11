@@ -13,6 +13,7 @@ import javax.swing.ImageIcon;
  * @author USER
  */
 public class Path<E>{
+    private Point source;
     private Point pointLink;
     private Path pathLink;
     private E obstacle_height;
@@ -33,6 +34,10 @@ public class Path<E>{
         this.obstacle_height = obstacle_height;
         this.back=back;
     }
+
+    public String getSource() {return (String)source.getID();}
+
+    public void setSource(Point source) {this.source = source;}    
 
     public Point getPointLink() {return pointLink;}
 
@@ -59,11 +64,9 @@ public class Path<E>{
 
     public void setBack(boolean back) {this.back = back;}
     
-    public int getFoodRequired(int foodInPouch){
-        return (int)((Integer)obstacle_height+0.5*foodInPouch);
-    }
+    public int getFoodRequired(int foodInPouch){return (int)((Integer)obstacle_height+0.5*foodInPouch);}
     
-    public int getRemainingFood(int foodInPouch){
-        return pointLink.getFood()-getFoodRequired(foodInPouch);
-    }
+    public int getRemainingFood(int foodInPouch){return pointLink.getFood()-getFoodRequired(foodInPouch);}
+    
+    public String getDestination(){return (String)pointLink.getID();}
 }
