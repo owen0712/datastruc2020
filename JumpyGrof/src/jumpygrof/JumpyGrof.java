@@ -22,14 +22,13 @@ public class JumpyGrof extends JPanel implements ActionListener{
      * @param args the command line arguments
      */
     static Scanner s=new Scanner(System.in);
-    public static Map<String,Integer> map=new Map();
-    static LinkedList<Kangaroo>kangaroo=new LinkedList();
+    public static Map<String,Integer> map=GUI.map;
+    public static LinkedList<Kangaroo>kangaroo=GUI.kangaroo;
     Image background=new ImageIcon("background.jpg").getImage();
-    static boolean run=false;
             
-    public static void main(String[] args) throws InterruptedException {
+    public static void animation() throws Exception {
         // TODO code application logic here
-        String ans="";
+        /*String ans="";
         do{
         System.out.println("You want to input (enter i) or random generated (enter r) : ");
         ans=s.next();
@@ -40,9 +39,9 @@ public class JumpyGrof extends JPanel implements ActionListener{
         else
             System.out.println("Wrong option. Please enter again");
         }while(!ans.equalsIgnoreCase("i")&&!ans.equalsIgnoreCase("r"));
-        
+        */
         new JumpyGrof();
-        
+        System.out.println("");
         int colonized=0;
         while(true){
             colonized=0;
@@ -56,7 +55,7 @@ public class JumpyGrof extends JPanel implements ActionListener{
                 else if(kangaroo.get(i).getGender()=='F')
                     kangaroos--;
                 else
-                    if(!kangaroo.get(i).moveByWholePoint())
+                    if(!kangaroo.get(i).moveThroughMap())
                         kangaroos--;
             }
             if(kangaroos==0)
@@ -83,9 +82,9 @@ public class JumpyGrof extends JPanel implements ActionListener{
             int food=s.nextInt();
             System.out.print("Enter number of kangaroo limit in point "+ID+" : ");
             int kangaroo_limit=s.nextInt();
-            map.addPoint(ID,food,kangaroo_limit);
             System.out.print("Enter number of path connect to point "+ID+" : ");
             int path=s.nextInt();
+            map.addPoint(ID,food,kangaroo_limit,path);
             for(int j=0;j<path;j++){
                 source.add(ID);
                 System.out.print("Enter the destination point ID : ");
@@ -124,13 +123,14 @@ public class JumpyGrof extends JPanel implements ActionListener{
         for(int i=1;i<=loop;i++){
             String ID=i+"";
             pointlist.add(ID);
-            int food=r.nextInt(100)+50;
+            int food=r.nextInt(100)+20;
             int kangaroo_limit=r.nextInt(25)+2;
-            map.addPoint(ID,food,kangaroo_limit);
+            int path=r.nextInt(pointlist.size());
+            map.addPoint(ID,food,kangaroo_limit,path);
         }
         
         for(String ID:pointlist){
-            int path=r.nextInt(pointlist.size());
+            int path=map.hasPoint(ID).getPath();
             for(int j=0;j<path;j++)
                 map.addPath(ID, pointlist.get(r.nextInt(pointlist.size())), r.nextInt(15)+1);
         }
@@ -168,7 +168,7 @@ public class JumpyGrof extends JPanel implements ActionListener{
     public void paint(Graphics g){
         super.paintComponent(g);
         g.drawImage(background,0,0,getWidth(),getHeight(),this);
-        for(int i=0;i<map.getSize();i++)
+        for(int i=0;i<map.size();i++)
             map.get(i).paint(g);
         for(int i=0;i<kangaroo.size();i++)
             kangaroo.get(i).paint(g);
