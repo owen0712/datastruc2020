@@ -45,7 +45,7 @@ public class JumpyGrof extends JPanel implements ActionListener{
         LogManager.getLogManager().reset();
         logger.setLevel(Level.ALL);
         ConsoleHandler ch=new ConsoleHandler();
-        ch.setLevel(Level.FINE);
+        ch.setLevel(Level.INFO);
         logger.addHandler(ch);
         try{
         FileHandler fh=new FileHandler("JumpyGrof.log");
@@ -72,7 +72,7 @@ public class JumpyGrof extends JPanel implements ActionListener{
                 else if(kangaroo.get(i).getGender()=='F')
                     kangaroos--;
                 else
-                    if(!kangaroo.get(i).moveThroughMap())
+                    if(!kangaroo.get(i).moveByPoint())
                         kangaroos--;
             }
             if(kangaroos==0)
