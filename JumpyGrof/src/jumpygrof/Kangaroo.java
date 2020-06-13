@@ -249,8 +249,8 @@ public class Kangaroo{
                 move=true;
                 point.removeKangaroo(this);
                 point=destination;
-                int destination_x=point.getX()+20+point.getKangaroo().size()*20;
-                int destination_y=point.getY()+20+point.getKangaroo().size()*20;
+                int destination_x=point.getX();
+                int destination_y=point.getY()+150;
 
                 int xchange=(Math.abs(destination_x-x)>100)?(destination_x-x)/60:(destination_x-x)/80;
                 int ychange=(Math.abs(destination_y-y)>90)?(destination_y-y)/60:(destination_y-y)/80;
