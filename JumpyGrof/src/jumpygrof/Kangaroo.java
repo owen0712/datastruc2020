@@ -6,10 +6,9 @@
 package jumpygrof;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.*;
 import java.util.*;
+import static jumpygrof.JumpyGrof.logger;
 
 /**
  *
@@ -21,8 +20,9 @@ public class Kangaroo{
     int height =(int)screenSize.getHeight();
     private Point point;
     private final Map map=JumpyGrof.map;
-    private int food_limit,food_available,x,y;
-    private char gender;
+    private final int food_limit;
+    private int food_available,x,y;
+    private final char gender;
     private boolean colonised,move,left;
     private Random r;
     private final Image stationaryF = new ImageIcon("Standing facing front with baby.png").getImage();
@@ -235,9 +235,11 @@ public class Kangaroo{
     
     public void movement(ArrayList<Path> path){
         for(int i=0;i<path.size();i++){
-            if(colonised)
+            if(colonised){
+                logger.info("\nKangaroo is colonised at point "+point.getID());
                 break;
-            System.out.println("Moving from "+point.getID()+" to "+path.get(i).getPointLink().getID());
+            }
+            logger.info("\nKangaroo is moving "+point.getID()+" to "+path.get(i).getPointLink().getID());
             Point destination=path.get(i).getPointLink();
             int food_required=path.get(i).getFoodRequired(food_available);
             if(destination.isColonised())
@@ -270,6 +272,9 @@ public class Kangaroo{
                 consumeFood(food_required);
                 point.checkColonised();
             }
+            try{
+            Thread.sleep(200);
+            }catch(InterruptedException e){};
             if(colonised)
                 break;
         }
