@@ -13,6 +13,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
+import static jumpygrof.JumpyGrof.logger;
 
 public class Point<V,E> implements ActionListener{
     Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
@@ -134,23 +135,6 @@ public class Point<V,E> implements ActionListener{
             }
             colonised=true;
         }
-    }
-    
-    public void pointdetails(){
-        System.out.println("***********************");
-        System.out.println("Point : "+ID);
-        System.out.println("Food : "+food);
-        System.out.println("Number of kangaroo : "+kangaroo.size());
-        for(int i=0;i<kangaroo.size();i++){
-            System.out.println("    "+kangaroo.get(i).getGender()+" "+kangaroo.get(i).getFoodAvailable());
-        }
-        System.out.println("Colony : "+colonised);
-        System.out.println("Path : ");
-        while(pathLink!=null){
-            System.out.println("    "+pathLink.getPointLink().getID()+" "+pathLink.getObstacle_height());
-            pathLink=pathLink.getPathLink();
-        }
-        System.out.println("***********************");
     }
     
     public void paint(Graphics g){
