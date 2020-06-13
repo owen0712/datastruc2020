@@ -7,10 +7,12 @@ package jumpygrof;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
 import javax.swing.*;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.LinkedList;
+import java.util.logging.*;
 
 /**
  *
@@ -21,32 +23,47 @@ public class JumpyGrof extends JPanel implements ActionListener{
     /**
      * @param args the command line arguments
      */
-    static Scanner s=new Scanner(System.in);
-    public static Map<String,Integer> map=GUI.map;
-    public static LinkedList<Kangaroo>kangaroo=GUI.kangaroo;
-    Image background=new ImageIcon("background.jpg").getImage();
+    private static Scanner s=new Scanner(System.in);
+    protected static Map<String,Integer> map=GUI.map;
+    protected static LinkedList<Kangaroo>kangaroo=GUI.kangaroo;
+    private Image background=new ImageIcon("background.jpg").getImage();
+    protected final static Logger logger=Logger.getLogger("JumpyGrof");
+
             
-    public static void animation() throws Exception {
+    public static void main(String[]args) throws Exception {
         // TODO code application logic here
-        /*String ans="";
-        do{
-        System.out.println("You want to input (enter i) or random generated (enter r) : ");
-        ans=s.next();
-        if(ans.equalsIgnoreCase("i"))
-            input();
-        else if(ans.equalsIgnoreCase("r"))
-            random();
+        JOptionPane pane=new JOptionPane();
+        Object[]option={"Console input","GUI"};
+        int x=pane.showOptionDialog(null,"You want to input using console or gui?","Please Select One",pane.DEFAULT_OPTION,pane.INFORMATION_MESSAGE,null,option,option[0]);
+        if(x==0)
+            consoleinput();
         else
-            System.out.println("Wrong option. Please enter again");
-        }while(!ans.equalsIgnoreCase("i")&&!ans.equalsIgnoreCase("r"));
-        */
+            GUI.start();
+    }
+    
+    public static void run(){
+        LogManager.getLogManager().reset();
+        logger.setLevel(Level.ALL);
+        ConsoleHandler ch=new ConsoleHandler();
+        ch.setLevel(Level.FINE);
+        logger.addHandler(ch);
+        try{
+        FileHandler fh=new FileHandler("JumpyGrof.log");
+        fh.setFormatter(new SimpleFormatter());
+        fh.setLevel(Level.FINE);
+        logger.addHandler(fh);
+        }catch(IOException e){
+            logger.log(Level.FINE,"File logger not working.");
+        }                
+        logger.log(Level.INFO,"The program is started.");
+        
         new JumpyGrof();
-        System.out.println("");
         int colonized=0;
         while(true){
             colonized=0;
             int kangaroos=kangaroo.size();
-            
+            map.mapdetails();
+            logger.info("\nKangaroos is preparing to move");
             for(int i=0;i<kangaroo.size();i++){
                 if(kangaroo.get(i).isColonised()){
                     colonized++;
@@ -61,11 +78,27 @@ public class JumpyGrof extends JPanel implements ActionListener{
             if(kangaroos==0)
                 break;
         }
-        System.out.println("Number of colonies:"+map.getColonies());
-        System.out.println("Number of remaining kangaroos:"+(kangaroo.size()-colonized));
+        String detail="\nNumber of colonies:"+map.getColonies();
+        detail+="\nNumber of remaining kangaroos:"+(kangaroo.size()-colonized);
         for(int i=0;i<kangaroo.size();i++)
             if(!kangaroo.get(i).isColonised())
-                System.out.println(kangaroo.get(i).toString());
+                detail+="\n"+kangaroo.get(i).toString();
+        logger.info(detail);
+    }
+    
+    public static void consoleinput(){
+        String ans="";
+        do{
+        System.out.println("You want to input (enter i) or random generated (enter r) : ");
+        ans=s.next();
+        if(ans.equalsIgnoreCase("i"))
+            input();
+        else if(ans.equalsIgnoreCase("r"))
+            random();
+        else
+            System.out.println("Wrong option. Please enter again");
+        }while(!ans.equalsIgnoreCase("i")&&!ans.equalsIgnoreCase("r"));
+        run();
     }
     
     public static void input(){
@@ -95,7 +128,8 @@ public class JumpyGrof extends JPanel implements ActionListener{
         }
         
         for(int i=0;i<source.size();i++){
-            map.addPath(source.get(i), destination.get(i), obstacles.get(i));
+            map.addPath(source.get(i), destination.get(i), obstacles.get(i),false);
+//            map.addPath(source.get(i), destination.get(i), obstacles.get(i));
         }
         
         System.out.print("Enter number of kangaroo : ");
@@ -132,7 +166,8 @@ public class JumpyGrof extends JPanel implements ActionListener{
         for(String ID:pointlist){
             int path=map.hasPoint(ID).getPath();
             for(int j=0;j<path;j++)
-                map.addPath(ID, pointlist.get(r.nextInt(pointlist.size())), r.nextInt(15)+1);
+                map.addPath(ID, pointlist.get(r.nextInt(pointlist.size())), r.nextInt(15)+1,false);
+//                map.addPath(ID, pointlist.get(r.nextInt(pointlist.size())), r.nextInt(15)+1);
         }
         
         loop=r.nextInt(10)+3;
@@ -165,11 +200,12 @@ public class JumpyGrof extends JPanel implements ActionListener{
     }
     
     @Override
-    public void paint(Graphics g){
+    public void paintComponent(Graphics g){
         super.paintComponent(g);
         g.drawImage(background,0,0,getWidth(),getHeight(),this);
-        for(int i=0;i<map.size();i++)
+        for(int i=0;i<map.size();i++){
             map.get(i).paint(g);
+        }
         for(int i=0;i<kangaroo.size();i++)
             kangaroo.get(i).paint(g);
     }
