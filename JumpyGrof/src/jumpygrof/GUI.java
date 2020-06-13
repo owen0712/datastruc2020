@@ -440,10 +440,14 @@ public class GUI extends Application{
         
         Label Thresholdlabel=new Label("Enter the threshold to form colony:");
         
-        Button enterButton6 = new Button("Enter");
+        Button enterButton6 = new Button("Start");
         enterButton6.setOnAction(e->{
-            if(isInteger(inputThreshold))
+            if(isInteger(inputThreshold)){
                 map.setThreshold(Integer.parseInt(inputThreshold.getText()));
+                try{
+                JumpyGrof.run();
+                }catch(Exception i){}
+            }
             else
                 GUIAlertBox.display("Error", inputThreshold.getText()+" is not an integer.");
         });
@@ -453,13 +457,6 @@ public class GUI extends Application{
             primaryStage.setScene(scene5);
         });
         
-        Button startButton6=new Button("Start");
-        enterButton6.setOnAction(e->{
-            try{
-                JumpyGrof.run();
-            }catch(Exception i){}
-        });
-        
         ImageView imageview3=new ImageView(image);
         imageview3.setFitHeight(200);
         imageview3.setFitWidth(300);
@@ -467,8 +464,7 @@ public class GUI extends Application{
         BorderPane buttons6=new BorderPane();
         buttons6.setPadding(new Insets(10,400,10,400));
         buttons6.setLeft(backButton6);
-        buttons6.setCenter(enterButton6);
-        buttons6.setRight(startButton6);
+        buttons6.setRight(enterButton6);
         
         VBox input_layout1 = new VBox(20);
         input_layout1.getChildren().addAll(imageview3,Thresholdlabel,inputThreshold,buttons6);
