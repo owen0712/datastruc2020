@@ -11,6 +11,7 @@ package jumpygrof;
  * @param <V>
  */
 import java.util.*;
+import static jumpygrof.JumpyGrof.logger;
 
 public class Map<V extends Comparable<V>,E>{
     private Point head;
@@ -59,17 +60,17 @@ public class Map<V extends Comparable<V>,E>{
         return newNode;
     }
     
-    /*public boolean addPath(V from,V to,E obstacles_height,boolean back){
+    public Path addPath(V from,V to,E obstacles_height,boolean back){
         r=new Random();
-        if(hasPoint(from)==null||hasPoint(to)==null||isPath(to,from)){
+        if(hasPoint(from)==null||hasPoint(to)==null||!back&&isPath(to,from)){
             System.out.println("Invalid path");
-            return false;
+            return null;
         }
         else{
-            PointNode currentNode=head;
+            Point currentNode=head;
             while(currentNode!=null){
                 if(from.compareTo((V)currentNode.getID())==0){
-                    PointNode temp=hasPoint(to);
+                    Point temp=hasPoint(to);
                     Path newNode=new Path(temp,obstacles_height,null,back);
                     Path pathNode=(Path)currentNode.getPathLink();
                     if(pathNode==null)
@@ -81,19 +82,19 @@ public class Map<V extends Comparable<V>,E>{
                     }
                     if(!back)
                         addPath(to,from,(E)((Integer)(Integer.parseInt(obstacles_height.toString())+r.nextInt(3))),true);
-                    return true;
+                    return newNode;
                 }
                 else
                     currentNode=currentNode.getPointLink();
             }
         }
-        return false;
-    }*/
+        return null;
+    }
     
-    public boolean addPath(V from,V to,E obstacles_height){
+    /*public Path addPath(V from,V to,E obstacles_height){
         if(hasPoint(from)==null||hasPoint(to)==null){
             System.out.println("Invalid path");
-            return false;
+            return null;
         }
         else if(isPath(from,to)&&isPath(to,from))
             System.out.println("The path is full");
@@ -116,14 +117,14 @@ public class Map<V extends Comparable<V>,E>{
                         pathNode.setPathLink(newNode);
                         newNode.setSource(currentNode);
                     }
-                    return true;
+                    return newNode;
                 }
                 else
                     currentNode=currentNode.getPointLink();
             }
         }
-        return false;
-    }
+        return null;
+    }*/
     
     public boolean isPath(V from,V to){
         if(hasPoint(from)==null||hasPoint(to)==null)
@@ -201,8 +202,20 @@ public class Map<V extends Comparable<V>,E>{
     public void mapdetails(){
         Point currentNode=head;
         while(currentNode!=null){
-            currentNode.pointdetails();
+            LinkedList<Kangaroo>kangaroo=currentNode.getKangaroo();
+            String detail="\n***********************"+"\nPoint : "+currentNode.getID()+"\nFood : "+currentNode.getFood()+"\nNumber of kangaroo : "+kangaroo.size();
+            for(int i=0;i<kangaroo.size();i++)
+                detail+="\n    "+kangaroo.get(i).getGender()+" "+kangaroo.get(i).getFoodAvailable();
+            detail+="\nColony : "+currentNode.isColonised()+"\nPath : ";
+            Path pathNode=currentNode.getPathLink();
+            while(pathNode!=null){
+                detail+="\n    "+pathNode.getPointLink().getID()+" "+pathNode.getObstacle_height();
+                pathNode=pathNode.getPathLink();
+        }
+            detail+="\n***********************";
+            logger.info(detail);
             currentNode=currentNode.getPointLink();
         }
+        return;
     }
 }
