@@ -81,7 +81,7 @@ public class Map<V extends Comparable<V>,E>{
                         pathNode.setPathLink(newNode);
                     }
                     if(!back)
-                        addPath(to,from,(E)((Integer)(Integer.parseInt(obstacles_height.toString())+r.nextInt(3))),true);
+                        addPath(to,from,(E)((Integer)(Integer.parseInt(obstacles_height.toString())+r.nextInt(3)+1)),true);
                     return newNode;
                 }
                 else
