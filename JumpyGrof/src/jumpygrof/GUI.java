@@ -1,15 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jumpygrof;
 
 import java.io.*;
 import java.util.*;
 import javafx.application.*;
 import javafx.collections.*;
-import javafx.event.*;
 import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -20,15 +14,11 @@ import javafx.scene.layout.*;
 import javafx.scene.text.*;
 import javafx.stage.*;
 
-/**
- *
- * @author USER
- */
 public class GUI extends Application{
     protected static Map<String,Integer> map=new Map();
     protected static LinkedList<Kangaroo>kangaroo=new LinkedList();
     private Scene scene1,scene2,scene3,scene4,scene5,scene6;
-    private int numberOfPoint,maxPoint,maxPath,numberOfRows,numPath,index,Threshold;
+    private int numberOfPoint,maxPoint,maxPath,numPath;
     private Random r;
     
     public static void start(){
@@ -40,15 +30,13 @@ public class GUI extends Application{
         primaryStage.setTitle("Jumpy Grof");
         
         ///////////////////////////First Layout///////////////////////////////
-        Image image=new Image(new FileInputStream("Sleeping facing right.png"));
+        Image image=new Image(new FileInputStream("image\\Sleeping facing right.png"));
         ImageView imageview1=new ImageView(image);
         imageview1.setFitHeight(200);
         imageview1.setFitWidth(300);
         
         Button startButton1 = new Button();
         startButton1.setText("Start");
-        startButton1.setMinHeight(50);
-        startButton1.setMinWidth(100);
         startButton1.setOnAction(e->primaryStage.setScene(scene2));
         
         Label Welcomelabel=new Label("Welcome to JumpyGrof Simulator");
@@ -80,8 +68,6 @@ public class GUI extends Application{
         Pointlabel.setFont(new Font("Times New Roman",24));
         
         Button enterButton2 = new Button("Enter");
-        enterButton2.setMinHeight(50);
-        enterButton2.setMinWidth(100);
         enterButton2.setOnAction(e -> {   
             if(isInteger(inputPoint)){
                 primaryStage.setScene(scene3);
@@ -166,8 +152,7 @@ public class GUI extends Application{
             
             if(valid){
                 pointlist.add(map.addPoint(inputID.getText(),Integer.parseInt(inputFood.getText()),Integer.parseInt(inputSize.getText()),Integer.parseInt(inputPath.getText())));
-                numberOfPoint--;       
-                numberOfRows= id.getTableView().getItems().size();
+                numberOfPoint--;
                 table.setItems(pointlist);
             }
             inputID.clear();
@@ -185,7 +170,7 @@ public class GUI extends Application{
             inputID.setText(r.nextInt(100)+"");
             inputFood.setText(r.nextInt(100)+20+"");
             inputSize.setText(r.nextInt(25)+2+"");
-            inputPath.setText(r.nextInt(maxPath)+"");
+            inputPath.setText(r.nextInt(maxPoint)+"");
         });
         
         Button backButton3=new Button("Back");
@@ -381,7 +366,6 @@ public class GUI extends Application{
             
             if(valid){
                 kangaroo.add(new Kangaroo(map.hasPoint(inputLocation.getText()),inputGender.getText().charAt(0),Integer.parseInt(inputMaxFood.getText())));
-//                kangaroolist.add(new Kangaroo(map.hasPoint(inputLocation.getText()),inputGender.getText().charAt(0),Integer.parseInt(inputMaxFood.getText())));
                 kangaroolist.add(kangaroo.getLast());
                 kangarootable.setItems(kangaroolist);
             }

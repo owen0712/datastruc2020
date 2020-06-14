@@ -19,15 +19,9 @@ public class Path<E>{
     private Path pathLink;
     private E obstacle_height;
     private boolean back;
-    private final Image low = new ImageIcon("Low.png").getImage();
-    private final Image middle = new ImageIcon("Middle.png").getImage();
-    private final Image high = new ImageIcon("High.png").getImage();
-
-    public Path() {
-        pointLink=null;
-        pathLink=null;
-        obstacle_height=null;
-    }
+    private final Image low = new ImageIcon("image\\Low.png").getImage();
+    private final Image middle = new ImageIcon("image\\Middle.png").getImage();
+    private final Image high = new ImageIcon("image\\High.png").getImage();
 
     public Path(Point pointLink, E obstacle_height, Path pathLink,boolean back) {
         this.pointLink = pointLink;
@@ -49,8 +43,6 @@ public class Path<E>{
     public void setPathLink(Path pathLink) {this.pathLink = pathLink;}
 
     public E getObstacle_height() {return obstacle_height;}
-
-    public void setObstacle_height(E obstacle_height) {this.obstacle_height = obstacle_height;}
     
     public Image getObstacle_image(){
         if((Integer)obstacle_height<3)

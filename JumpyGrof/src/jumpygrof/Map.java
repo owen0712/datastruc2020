@@ -1,15 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jumpygrof;
 
-/**
- *
- * @author USER
- * @param <V>
- */
 import java.util.*;
 import static jumpygrof.JumpyGrof.logger;
 
@@ -56,10 +46,10 @@ public class Map<V extends Comparable<V>,E>{
             currentNode.setPointLink(newNode);
         }
         checkOverlapped(newNode);
-        newNode.setHead(head);
         return newNode;
     }
     
+    //addPath method for basic feature
     public Path addPath(V from,V to,E obstacles_height,boolean back){
         r=new Random();
         if(hasPoint(from)==null||hasPoint(to)==null||!back&&isPath(to,from)){
@@ -81,7 +71,7 @@ public class Map<V extends Comparable<V>,E>{
                         pathNode.setPathLink(newNode);
                     }
                     if(!back)
-                        addPath(to,from,(E)((Integer)(Integer.parseInt(obstacles_height.toString())+r.nextInt(3)+1)),true);
+                        addPath(to,from,obstacles_height,true);
                     return newNode;
                 }
                 else
@@ -91,11 +81,15 @@ public class Map<V extends Comparable<V>,E>{
         return null;
     }
     
-    /*public Path addPath(V from,V to,E obstacles_height){
+    //addPath method for extra feature 2
+    public Path addPath(V from,V to,E obstacles_height){
         if(hasPoint(from)==null||hasPoint(to)==null){
             System.out.println("Invalid path");
             return null;
         }
+        else if(isPath(to,from))
+            if(hasPath(to,from).getObstacle_height().equals(obstacles_height))
+                System.out.println("Cannot be same height");
         else if(isPath(from,to)&&isPath(to,from))
             System.out.println("The path is full");
         else if(isPath(from,to))
@@ -124,7 +118,7 @@ public class Map<V extends Comparable<V>,E>{
             }
         }
         return null;
-    }*/
+    }
     
     public boolean isPath(V from,V to){
         if(hasPoint(from)==null||hasPoint(to)==null)
@@ -151,6 +145,31 @@ public class Map<V extends Comparable<V>,E>{
         return false;
     }
     
+    public Path hasPath(V from,V to){
+        if(hasPoint(from)==null||hasPoint(to)==null)
+            return null;
+        else{
+            Point currentNode=head;
+            while(currentNode!=null){
+                if(from.compareTo((V)currentNode.getID())==0){
+                    Point temp=hasPoint(to);
+                    Path pathNode=currentNode.getPathLink();
+                    if(pathNode==null)
+                        return null;
+                    else
+                        while(pathNode!=null){
+                            if(pathNode.getPointLink()==temp)
+                                return pathNode;
+                            pathNode=pathNode.getPathLink();
+                        }
+                    break;
+                }
+                currentNode=currentNode.getPointLink();
+            }
+        }
+        return null;
+    }
+    
     public void setThreshold(int threshold){
         Point currentNode=head;
         while(currentNode!=null){
@@ -169,8 +188,6 @@ public class Map<V extends Comparable<V>,E>{
         }
         return colonies;
     }
-    
-    public int getColonyLimit(){return head.getColonyLimit();}
     
     public Point get(int index){
         if(index==0)
@@ -199,6 +216,8 @@ public class Map<V extends Comparable<V>,E>{
         }
     }
     
+    
+    //log the details of each point
     public void mapdetails(){
         Point currentNode=head;
         while(currentNode!=null){
@@ -216,6 +235,5 @@ public class Map<V extends Comparable<V>,E>{
             logger.info(detail);
             currentNode=currentNode.getPointLink();
         }
-        return;
     }
 }

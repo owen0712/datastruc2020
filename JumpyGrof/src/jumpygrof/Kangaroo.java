@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jumpygrof;
 
 import java.awt.*;
@@ -10,10 +5,6 @@ import javax.swing.*;
 import java.util.*;
 import static jumpygrof.JumpyGrof.logger;
 
-/**
- *
- * @author USER
- */
 public class Kangaroo{
     Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
     int width=(int)screenSize.getWidth();
@@ -24,11 +15,11 @@ public class Kangaroo{
     private int food_available,x,y;
     private final char gender;
     private boolean colonised,move,left;
-    private Random r;
-    private final Image stationaryF = new ImageIcon("Standing facing front with baby.png").getImage();
-    private final Image stationaryM = new ImageIcon("Standing looking back.png").getImage();
-    private final Image jumpLeft = new ImageIcon("Jumping left.gif").getImage();
-    private final Image jumpRight = new ImageIcon("Jumping right.gif").getImage();
+    private final Random r;
+    private final Image stationaryF = new ImageIcon("image\\Female kangaroo.png").getImage();
+    private final Image stationaryM = new ImageIcon("image\\Male kangaroo.png").getImage();
+    private final Image jumpLeft = new ImageIcon("image\\Jumping left.gif").getImage();
+    private final Image jumpRight = new ImageIcon("image\\Jumping right.gif").getImage();
 
     public Kangaroo(Point point, char gender, int food_limit) {
         this.point = point;
@@ -123,6 +114,7 @@ public class Kangaroo{
         return true;
     }
     
+    //extra feature 3
     public boolean moveThroughMap(){
         ArrayList<Point>option=new ArrayList<>();
         for(int i=0;i<map.size();i++){
@@ -133,7 +125,7 @@ public class Kangaroo{
         ArrayList<Path>path=new ArrayList<>();
         for(int i=0;i<option.size();i++){
             path=shortestPath(point,option.get(i));
-            if(path.size()!=0)
+            if(!path.isEmpty())
                 break;
         }
         if(!path.isEmpty()){
@@ -177,7 +169,7 @@ public class Kangaroo{
         visited.add(from); 
           
         if (from==to){ 
-            pathList.add(new ArrayList<Path>());
+            pathList.add(new ArrayList<>());
             for(int i=0;i<travel.size();i++)
                 pathList.get(pathList.size()-1).add(travel.get(i));
             visited.remove(from); 
@@ -233,8 +225,10 @@ public class Kangaroo{
         return optimum;
     }
     
+    //animation of movement
     public void movement(ArrayList<Path> path){
         for(int i=0;i<path.size();i++){
+            map.mapdetails();
             if(colonised){
                 logger.info("\nKangaroo is colonised at point "+point.getID());
                 break;
@@ -297,16 +291,16 @@ public class Kangaroo{
     public void paint(Graphics g){
         if(move){
             if(left)
-                g.drawImage(jumpLeft,x+100,height-y-75,null);
+                g.drawImage(jumpLeft,x,height-y-75,null);
             else
-                g.drawImage(jumpRight,x+100,height-y-75,null);
+                g.drawImage(jumpRight,x,height-y-75,null);
                 
         }
         else{
             if(gender=='M')
-                g.drawImage(stationaryM,x+100,height-y-75,null);
+                g.drawImage(stationaryM,x,height-y-75,null);
             else
-                g.drawImage(stationaryF,x+100,height-y-75,null);
+                g.drawImage(stationaryF,x,height-y-75,null);
         }
     }
 }

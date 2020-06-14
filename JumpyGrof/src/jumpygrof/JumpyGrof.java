@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jumpygrof;
 
 import java.awt.*;
@@ -14,27 +9,21 @@ import java.util.Scanner;
 import java.util.LinkedList;
 import java.util.logging.*;
 
-/**
- *
- * @author USER
- */
 public class JumpyGrof extends JPanel implements ActionListener{
 
-    /**
-     * @param args the command line arguments
-     */
+    private Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
+    private int width=(int)screenSize.getWidth();
+    private int height = (int)screenSize.getHeight();
     private static Scanner s=new Scanner(System.in);
     protected static Map<String,Integer> map=GUI.map;
     protected static LinkedList<Kangaroo>kangaroo=GUI.kangaroo;
-    private Image background=new ImageIcon("background.jpg").getImage();
+    private Image background=new ImageIcon("image\\background.jpg").getImage();
     protected final static Logger logger=Logger.getLogger("JumpyGrof");
 
-            
+    //provide to input using gui or console
     public static void main(String[]args) throws Exception {
-        // TODO code application logic here
-        JOptionPane pane=new JOptionPane();
         Object[]option={"Console input","GUI"};
-        int x=pane.showOptionDialog(null,"You want to input using console or gui?","Please Select One",pane.DEFAULT_OPTION,pane.INFORMATION_MESSAGE,null,option,option[0]);
+        int x=JOptionPane.showOptionDialog(null,"You want to input using console or gui?","Please Select One",JOptionPane.DEFAULT_OPTION,JOptionPane.INFORMATION_MESSAGE,null,option,option[0]);
         if(x==0)
             consoleinput();
         else
@@ -42,6 +31,7 @@ public class JumpyGrof extends JPanel implements ActionListener{
     }
     
     public static void run(){
+        //initialize the logger
         LogManager.getLogManager().reset();
         logger.setLevel(Level.ALL);
         ConsoleHandler ch=new ConsoleHandler();
@@ -50,19 +40,20 @@ public class JumpyGrof extends JPanel implements ActionListener{
         try{
         FileHandler fh=new FileHandler("JumpyGrof.log");
         fh.setFormatter(new SimpleFormatter());
-        fh.setLevel(Level.FINE);
+        fh.setLevel(Level.INFO);
         logger.addHandler(fh);
         }catch(IOException e){
-            logger.log(Level.FINE,"File logger not working.");
+            logger.info("File logger not working.");
         }                
-        logger.log(Level.INFO,"The program is started.");
+        logger.info("The program is started.");
         
+        //call the JFrame
         new JumpyGrof();
+        //main process
         int colonized=0;
         while(true){
             colonized=0;
             int kangaroos=kangaroo.size();
-            map.mapdetails();
             logger.info("\nKangaroos is preparing to move");
             for(int i=0;i<kangaroo.size();i++){
                 if(kangaroo.get(i).isColonised()){
@@ -86,6 +77,7 @@ public class JumpyGrof extends JPanel implements ActionListener{
         logger.info(detail);
     }
     
+    //ask want to input or random
     public static void consoleinput(){
         String ans="";
         do{
@@ -177,19 +169,16 @@ public class JumpyGrof extends JPanel implements ActionListener{
             int food=r.nextInt(13)+1;
             kangaroo.add(new Kangaroo(map.hasPoint(location),gender,food));
         }
-        int colony_limit=r.nextInt(1)+3;
+        int colony_limit=r.nextInt(6)+1;
         map.setThreshold(colony_limit);
     }
     
     public JumpyGrof(){
-        Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
-        int width=(int)screenSize.getWidth();
-        int height =(int)screenSize.getHeight();
         JFrame frame=new JFrame();
         frame.setSize(width,height);
         frame.setTitle("JumpyGrof");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.getContentPane().add(new JLabel(setBackground(background)));
+        frame.getContentPane().add(new JLabel(new ImageIcon(new ImageIcon(background).getImage().getScaledInstance(width,height, java.awt.Image.SCALE_SMOOTH))));
         frame.pack();
         frame.setLocationByPlatform(true);
         frame.setTitle("JumpyGrof");
@@ -199,8 +188,9 @@ public class JumpyGrof extends JPanel implements ActionListener{
         frame.setVisible(true);
     }
     
+    //animation
     @Override
-    public void paintComponent(Graphics g){
+    public void paint(Graphics g){
         super.paintComponent(g);
         g.drawImage(background,0,0,getWidth(),getHeight(),this);
         for(int i=0;i<map.size();i++){
@@ -209,18 +199,8 @@ public class JumpyGrof extends JPanel implements ActionListener{
         for(int i=0;i<kangaroo.size();i++)
             kangaroo.get(i).paint(g);
     }
-
-    public ImageIcon setBackground(Image img){
-        Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
-        int width=(int)screenSize.getWidth();
-        int height = (int)screenSize.getHeight();
-        ImageIcon ic = new ImageIcon(background);
-        Image image = ic.getImage();
-        Image newImage = image.getScaledInstance(width,height, java.awt.Image.SCALE_SMOOTH);
-        ic = new ImageIcon(newImage);
-        return ic;
-    }
     
+    //always refresh the window to show animation
     @Override
     public void actionPerformed(ActionEvent e) {
         repaint();
