@@ -6,9 +6,9 @@ import java.util.*;
 import static jumpygrof.JumpyGrof.logger;
 
 public class Kangaroo{
-    Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
-    int width=(int)screenSize.getWidth();
-    int height =(int)screenSize.getHeight();
+    private Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
+    private int width=(int)screenSize.getWidth();
+    private int height =(int)screenSize.getHeight();
     private Point point;
     private final Map map=JumpyGrof.map;
     private final int food_limit;
@@ -200,9 +200,15 @@ public class Kangaroo{
             totalFood=0;
             end=true;
             food=food_available;
-            for(Path path:option){
+            for(int i=0;i<option.size();i++){
+                Path path=option.get(i);
                 int remainingFood=path.getRemainingFood(food);
                 
+                if(i!=option.size()-1)
+                    if(path.getPointLink().isColonised()||path.getPointLink().getKangaroo().size()==path.getPointLink().getColony_limit()-1){
+                        end=false;
+                        break;
+                    }
                 if(path.getPointLink().getFood()==point.getFood()&&remainingFood<0&&food+remainingFood<0){
                     end=false;
                     break;
@@ -246,8 +252,8 @@ public class Kangaroo{
                 int destination_x=point.getX();
                 int destination_y=point.getY()+150;
 
-                int xchange=(Math.abs(destination_x-x)>100)?(destination_x-x)/60:(destination_x-x)/80;
-                int ychange=(Math.abs(destination_y-y)>90)?(destination_y-y)/60:(destination_y-y)/80;
+                int xchange=(destination_x-x)/60;
+                int ychange=(destination_y-y)/60;
                 left=x-point.getX()>0;
                 while(true){
                     x+=xchange;
@@ -267,7 +273,7 @@ public class Kangaroo{
                 point.checkColonised();
             }
             try{
-            Thread.sleep(200);
+            Thread.sleep(400);
             }catch(InterruptedException e){};
             if(colonised)
                 break;
