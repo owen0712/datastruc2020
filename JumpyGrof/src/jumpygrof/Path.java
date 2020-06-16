@@ -50,7 +50,7 @@ public class Path<E>{
     // calculation of food consuming when going through one point to the other
     public int getFoodRequired(int foodInPouch){return (int)((Integer)obstacle_height+0.5*foodInPouch);}
     
-    //food remaining in kangaroo pouch
+    //food remaining in point
     public int getRemainingFood(int foodInPouch){return pointLink.getFood()-getFoodRequired(foodInPouch);}
     
     //get the destination ID used for GUI purpose
