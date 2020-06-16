@@ -9,14 +9,16 @@ import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.*;
 import javafx.scene.image.*;
-import javafx.scene.input.KeyCode;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.*;
 import javafx.stage.*;
 
 public class GUI extends Application{
+    //ma and kangaroo is set i through the gui input and is set as protected to be accessed by other class
     protected static Map<String,Integer> map=new Map();
     protected static LinkedList<Kangaroo>kangaroo=new LinkedList();
+    //scene for each part of input
     private Scene scene1,scene2,scene3,scene4,scene5,scene6;
     private int numberOfPoint,maxPoint,maxPath,numPath;
     private Random r;
@@ -261,8 +263,8 @@ public class GUI extends Application{
             }
             
             if(valid){
+                //different method for unidirectional path
                 pathlist.add(map.addPath(inputSource.getText(),inputDestination.getText(),Integer.parseInt(inputHeight.getText()),false));
-//                pathlist.add(map.addPath(inputSource.getText(),inputDestination.getText(),Integer.parseInt(inputHeight.getText())));
                 pathlist.get(pathlist.size()-1).setSource(map.hasPoint(inputSource.getText()));
                 numPath=map.hasPoint(inputSource.getText()).getPath();
                 map.hasPoint(inputSource.getText()).setPath(numPath-1);
@@ -463,6 +465,7 @@ public class GUI extends Application{
         primaryStage.show();
     }
     
+    //to check whether user input correct type of data or not
     private boolean isInteger(TextField a){
         try{
             int number = Integer.parseInt(a.getText());
