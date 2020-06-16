@@ -82,7 +82,7 @@ public class Point<V,E> implements ActionListener{
     public boolean isColonised() {return colonised;}
     
     public boolean addKangaroo(Kangaroo newKangaroo){
-        if(kangaroo.size()<=kangaroo_limit){//if number of kangaroo inside point is less than kangaroo limit, new kangaroo is added
+        if(kangaroo.size()<kangaroo_limit){//if number of kangaroo inside point is less than kangaroo limit, new kangaroo is added
             kangaroo.add(newKangaroo);
             if(newKangaroo.getGender()=='F')
                 female++;//female is count for the purpose when the kangaroo select the destination to be moved
