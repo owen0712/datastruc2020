@@ -1,18 +1,8 @@
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jumpygrof;
 
 import java.awt.Image;
 import javax.swing.ImageIcon;
 
-/**
- *
- * @author USER
- */
 public class Path<E>{
     private Point source;
     private Point pointLink;
@@ -57,9 +47,12 @@ public class Path<E>{
 
     public void setBack(boolean back) {this.back = back;}
     
+    // calculation of food consuming when going through one point to the other
     public int getFoodRequired(int foodInPouch){return (int)((Integer)obstacle_height+0.5*foodInPouch);}
     
+    //food remaining in kangaroo pouch
     public int getRemainingFood(int foodInPouch){return pointLink.getFood()-getFoodRequired(foodInPouch);}
     
+    //get the destination ID used for GUI purpose
     public String getDestination(){return (String)pointLink.getID();}
 }
