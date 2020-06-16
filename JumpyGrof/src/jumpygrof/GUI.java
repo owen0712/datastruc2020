@@ -169,7 +169,7 @@ public class GUI extends Application{
         Button randomButton3= new Button("Random");
         randomButton3.setOnAction(e->{
             r=new Random();
-            inputID.setText(r.nextInt(100)+"");
+            inputID.setText((pointlist.size()+1)+"");
             inputFood.setText(r.nextInt(100)+20+"");
             inputSize.setText(r.nextInt(25)+2+"");
             inputPath.setText(r.nextInt(maxPoint)+"");
