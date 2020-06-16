@@ -15,7 +15,7 @@ import javafx.scene.text.*;
 import javafx.stage.*;
 
 public class GUI extends Application{
-    //ma and kangaroo is set i through the gui input and is set as protected to be accessed by other class
+    //map and kangaroo is set i through the gui input and is set as protected to be accessed by other class
     protected static Map<String,Integer> map=new Map();
     protected static LinkedList<Kangaroo>kangaroo=new LinkedList();
     //scene for each part of input
@@ -93,10 +93,10 @@ public class GUI extends Application{
         ///////////////////////////Third Layout///////////////////////////////
         ObservableList<Point<String,Integer>> pointlist=FXCollections.observableArrayList();
         
-        TableColumn<Map, String> id = new TableColumn<>("ID");
-        TableColumn<Map, Integer> food = new TableColumn<>("Number of food");
-        TableColumn<Map, Integer> size = new TableColumn<>("Max Kangaroo Size");
-        TableColumn<Map, Integer> path = new TableColumn<>("Number of Paths Connected");
+        TableColumn<Point, String> id = new TableColumn<>("ID");
+        TableColumn<Point, Integer> food = new TableColumn<>("Number of food");
+        TableColumn<Point, Integer> size = new TableColumn<>("Max Kangaroo Size");
+        TableColumn<Point, Integer> path = new TableColumn<>("Number of Paths Connected");
         id.setMinWidth(50);
         food.setMinWidth(150);
         size.setMinWidth(200);
@@ -131,7 +131,7 @@ public class GUI extends Application{
                 return;
             }
             if(numberOfPoint <1){
-                GUIAlertBox.display("Attention","Exceeded number of points.\nPress OK to continue." );
+                GUIAlertBox.display("Attention","Exceeded number of points.\nPress Next to continue." );
                 valid=false;
             }
 
