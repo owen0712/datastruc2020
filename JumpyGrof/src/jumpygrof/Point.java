@@ -34,7 +34,7 @@ public class Point<V,E> implements ActionListener{
         female=0;
         colony_food=0;
         setCoordinate();
-        timer=new javax.swing.Timer(5,this);
+        timer=new javax.swing.Timer(5,this);//for food regeneration purpose
         timer.restart();
     }
     
@@ -50,7 +50,7 @@ public class Point<V,E> implements ActionListener{
     public void setFood(int food) {
         this.food = food;
         if(food<=0)
-            depleted=true;
+            depleted=true;//if the food is used up, the point to be depleted
     }
 
     public int getPath() {return path;}
@@ -73,20 +73,22 @@ public class Point<V,E> implements ActionListener{
 
     public Point getPointLink() {return pointLink;}
 
-    public void setPointLink(Point pointLink) {this.pointLink = pointLink;}    
+    public void setPointLink(Point pointLink) {this.pointLink = pointLink;} 
 
+    public int getColony_limit() {return colony_limit;}
+    
     public void setColony_limit(int colony_limit) {this.colony_limit = colony_limit;}
 
     public boolean isColonised() {return colonised;}
     
     public boolean addKangaroo(Kangaroo newKangaroo){
-        if(kangaroo.size()<=kangaroo_limit){
+        if(kangaroo.size()<=kangaroo_limit){//if number of kangaroo inside point is less than kangaroo limit, new kangaroo is added
             kangaroo.add(newKangaroo);
             if(newKangaroo.getGender()=='F')
-                female++;
-            return true;
+                female++;//female is count for the purpose when the kangaroo select the destination to be moved
+            return true;//return true if then kangaroo is successfully added
         }
-        return false;
+        return false;//return false if number of kangaroo inside point is more than kangaroo limit
     }
     
     public boolean isFull(){return kangaroo.size()>=kangaroo_limit;}
@@ -96,8 +98,8 @@ public class Point<V,E> implements ActionListener{
     public void checkColonised(){
         if(kangaroo.size()>=colony_limit){
             for(int i=0;i<kangaroo.size();i++){
-                kangaroo.get(i).setColonised(true);
-                colony_food+=kangaroo.get(i).getFoodAvailable();
+                kangaroo.get(i).setColonised(true);//all kangaroo is set as colonised
+                colony_food+=kangaroo.get(i).getFoodAvailable(); //all food in pouch is taken as colony food
                 kangaroo.get(i).setFoodAvailable(0);
             }
             colonised=true;
@@ -159,10 +161,10 @@ public class Point<V,E> implements ActionListener{
 
     //Uncomment the code in below method for extra feature 4
     @Override
-    public void actionPerformed(ActionEvent e) {
-        /*time++;
-        if(time%100==0&&food<=food_limit)
-            food++;
+    public void actionPerformed(ActionEvent e) {//action the regeneration of food
+        /*time++;//increment of the time by 1
+        if(time%100==0&&food<=food_limit) //if time required for food regenerate is reached and food is less than food limit
+            food++; //food regenerate
         if(food>0)
             depleted=false;*/
     }
