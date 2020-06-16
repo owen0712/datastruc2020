@@ -1,233 +1,172 @@
 package jumpygrof;
 
+import java.awt.*;
+import java.awt.event.*;
 import java.util.*;
-import static jumpygrof.JumpyGrof.logger;
+import javax.swing.*;
 
-public class Map<V extends Comparable<V>,E>{
-    private Point head;
+public class Point<V,E> implements ActionListener{
+    private Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
+    private int width=(int)screenSize.getWidth();
+    private int height =(int)screenSize.getHeight();
+    private V ID;
+    private final int kangaroo_limit,food_limit;
+    private int food,x,y,female,colony_food,colony_limit,time,path;
+    private Point pointLink;
+    private Path pathLink;
+    private boolean depleted,colonised;
+    private Random r;
+    private LinkedList<Kangaroo>kangaroo;
+    private final Image available_point=new ImageIcon("image\\available_point.png").getImage();
+    private final Image depleted_point=new ImageIcon("image\\depleted_point.png").getImage();
+    private javax.swing.Timer timer;
 
-    public Map(){head=null;}
-    
-    public boolean isEmpty(){return head==null;}
-    
-    public int size(){
-        int count=0;
-        Point currentNode=head;
-        while(currentNode!=null){
-            currentNode=currentNode.getPointLink();
-            count++;
-        }
-        return count;
+    public Point(V ID, int food,int kangaroo_limit,int path){
+        this.ID=ID;
+        this.food=food;
+        this.food_limit=food;
+        this.kangaroo_limit=kangaroo_limit;
+        this.path=path;
+        depleted=false;
+        colonised=false;
+        r=new Random();
+        kangaroo=new LinkedList();
+        female=0;
+        colony_food=0;
+        setCoordinate();
+        timer=new javax.swing.Timer(5,this);//for food regeneration purpose
+        timer.restart();
     }
     
-    public void clear(){head=null;}
+    public void setCoordinate(){
+        x=r.nextInt(width-225);
+        y=r.nextInt(height-225);
+    }
+
+    public V getID() {return ID;}
     
-    public Point hasPoint(V ID){
-        Point currentNode=head;
-        if(isEmpty())
-            return null;
-        while(currentNode!=null){
-            if(ID.compareTo((V)currentNode.getID())==0)
-                return currentNode;
-            currentNode=currentNode.getPointLink();
+    public int getFood() {return food;}
+
+    public void setFood(int food) {
+        this.food = food;
+        if(food<=0)
+            depleted=true;//if the food is used up, the point to be depleted
+    }
+
+    public int getPath() {return path;}
+
+    public void setPath(int path) {this.path = path;}
+    
+    public int getFemale() {return female;}
+
+    public int getX() {return x;}
+
+    public int getY() {return y;}
+
+    public Path getPathLink() {return pathLink;}
+
+    public void setPathLink(Path pathLink) {this.pathLink = pathLink;}
+
+    public boolean isDepleted() {return depleted;}
+
+    public LinkedList<Kangaroo> getKangaroo() {return kangaroo;}
+
+    public Point getPointLink() {return pointLink;}
+
+    public void setPointLink(Point pointLink) {this.pointLink = pointLink;} 
+
+    public int getColony_limit() {return colony_limit;}
+    
+    public void setColony_limit(int colony_limit) {this.colony_limit = colony_limit;}
+
+    public boolean isColonised() {return colonised;}
+    
+    public boolean addKangaroo(Kangaroo newKangaroo){
+        if(kangaroo.size()<kangaroo_limit){//if number of kangaroo inside point is less than kangaroo limit, new kangaroo is added
+            kangaroo.add(newKangaroo);
+            if(newKangaroo.getGender()=='F')
+                female++;//female is count for the purpose when the kangaroo select the destination to be moved
+            return true;//return true if then kangaroo is successfully added
         }
-        return null;
+        return false;//return false if number of kangaroo inside point is more than kangaroo limit
     }
     
-    public Point addPoint(String ID, int food,int limit,int path){
-        Point newNode=new Point(ID,food,limit,path);
-        if(head==null)
-            head=newNode;
-        else{
-            Point currentNode=head;
-            while(currentNode.getPointLink()!=null)
-                currentNode=currentNode.getPointLink();
-            currentNode.setPointLink(newNode);
-        }
-        checkOverlapped(newNode);
-        return newNode;
-    }
+    public boolean isFull(){return kangaroo.size()>=kangaroo_limit;}
     
-    //addPath method for basic feature
-    public Path addPath(V from,V to,E obstacles_height,boolean back){//use back to identify it is forth or back
-        if(hasPoint(from)==null||hasPoint(to)==null||!back&&isPath(to,from)){//check whether the from and to is exist and the bidirectional path is present or not
-            System.out.println("Invalid path");
-            return null;
-        }
-        Point currentNode=head;
-        while(currentNode!=null){
-            if(from.compareTo((V)currentNode.getID())==0){
-                Point temp=hasPoint(to);
-                Path newNode=new Path(temp,obstacles_height,null,back);
-                Path pathNode=(Path)currentNode.getPathLink();
-                if(pathNode==null)
-                    currentNode.setPathLink(newNode);
-                else{
-                    while(pathNode.getPathLink()!=null)
-                        pathNode=pathNode.getPathLink();
-                    pathNode.setPathLink(newNode);
-                }
-                if(!back)
-                    addPath(to,from,obstacles_height,!back); //recursive to add back path if the path added is forth
-                return newNode;
+    public void removeKangaroo(Kangaroo leftKangaroo){kangaroo.remove(leftKangaroo);}
+    
+    public void checkColonised(){
+        if(kangaroo.size()>=colony_limit){
+            for(int i=0;i<kangaroo.size();i++){
+                kangaroo.get(i).setColonised(true);//all kangaroo is set as colonised
+                colony_food+=kangaroo.get(i).getFoodAvailable(); //all food in pouch is taken as colony food
+                kangaroo.get(i).setFoodAvailable(0);
             }
-            else
-                currentNode=currentNode.getPointLink();
+            colonised=true;
         }
-        return null;
     }
     
-    //addPath method for extra feature 2
-    public Path addPath(V from,V to,E obstacles_height){
-        if(hasPoint(from)==null||hasPoint(to)==null){//check whether from and to is exist
-            System.out.println("Invalid path");
-            return null;
-        }
-        else if(isPath(from,to))//check whether this path had already existed or not
-            System.out.println("The path is existed");
-        else if(isPath(to,from))
-            if(hasPath(to,from).getObstacle_height().equals(obstacles_height))//check whether the height is same with another path or not
-                System.out.println("Cannot be same height");
-        else{
-            Point currentNode=head;
-            while(currentNode!=null){
-                if(from.compareTo((V)currentNode.getID())==0){
-                    Point temp=hasPoint(to);
-                    Path newNode=isPath(to,from)?new Path(temp,obstacles_height,null,true):new Path(temp,obstacles_height,null,false);
-                    Path pathNode=(Path)currentNode.getPathLink();
-                    if(pathNode==null){
-                        currentNode.setPathLink(newNode);
-                        newNode.setSource(currentNode);
-                    }
-                    else{
-                        while(pathNode.getPathLink()!=null)
-                            pathNode=pathNode.getPathLink();
-                        pathNode.setPathLink(newNode);
-                        newNode.setSource(currentNode);
-                    }
-                    return newNode;
-                }
-                else
-                    currentNode=currentNode.getPointLink();
+    //change to this paint method to this for extra feature 2
+    /*public void paint(Graphics g){
+        g.setFont(new Font("TimesRoman",Font.PLAIN,36));
+        Path pathNode=pathLink;
+        while(pathNode!=null){
+            int middle_x=(x+pathNode.getPointLink().getX())/2;
+            int middle_y=(y+pathNode.getPointLink().getY())/2;
+            if(!pathNode.isBack()){
+                g.drawLine(x+50, height-y-70, pathNode.getPointLink().getX()+50, height-pathNode.getPointLink().getY()-70);
+                g.drawImage(pathNode.getObstacle_image(),middle_x+25,height-middle_y-85,null);
+                g.drawString(pathNode.getObstacle_height().toString(),middle_x+25,height-middle_y-85);
             }
-        }
-        return null;
-    }
-    
-    public boolean isPath(V from,V to){
-        if(hasPoint(from)==null||hasPoint(to)==null)
-            return false;
-        else{
-            Point currentNode=head;
-            while(currentNode!=null){
-                if(from.compareTo((V)currentNode.getID())==0){
-                    Point temp=hasPoint(to);
-                    Path pathNode=currentNode.getPathLink();
-                    if(pathNode==null)
-                        return false;
-                    else
-                        while(pathNode!=null){
-                            if(pathNode.getPointLink()==temp)
-                                return true;
-                            pathNode=pathNode.getPathLink();
-                        }
-                    break;
-                }
-                currentNode=currentNode.getPointLink();
+            else{
+                g.drawLine(x+100, height-y-80, pathNode.getPointLink().getX()+100, height-pathNode.getPointLink().getY()-80);
+                g.drawImage(pathNode.getObstacle_image(),middle_x+75,height-middle_y-95,null);
+                g.drawString(pathNode.getObstacle_height().toString(),middle_x+75,height-middle_y-95);
             }
+            pathNode=pathNode.getPathLink();
         }
-        return false;
-    }
+        
+        if(!depleted)
+            g.drawImage(available_point,x,height-y-150,null);
+        else
+            g.drawImage(depleted_point,x,height-y-150,null);
+        
+        g.setFont(new Font("TimesRoman",Font.PLAIN,72));
+        g.drawString(ID.toString(), x+50, height-y-50);
+    }*/
     
-    public Path hasPath(V from,V to){
-        if(hasPoint(from)==null||hasPoint(to)==null)
-            return null;
-        else{
-            Point currentNode=head;
-            while(currentNode!=null){
-                if(from.compareTo((V)currentNode.getID())==0){
-                    Point temp=hasPoint(to);
-                    Path pathNode=currentNode.getPathLink();
-                    if(pathNode==null)
-                        return null;
-                    else
-                        while(pathNode!=null){
-                            if(pathNode.getPointLink()==temp)
-                                return pathNode;
-                            pathNode=pathNode.getPathLink();
-                        }
-                    break;
-                }
-                currentNode=currentNode.getPointLink();
+    //change to this paint method for basic feature
+    public void paint(Graphics g){
+        g.setFont(new Font("TimesRoman",Font.PLAIN,36));
+        Path pathNode=pathLink;
+        while(pathNode!=null){
+            int middle_x=(x+pathNode.getPointLink().getX())/2;
+            int middle_y=(y+pathNode.getPointLink().getY())/2;
+            if(!pathNode.isBack()){
+                g.drawLine(x+50, height-y-70, pathNode.getPointLink().getX()+50, height-pathNode.getPointLink().getY()-70);
+                g.drawImage(pathNode.getObstacle_image(),middle_x,height-middle_y-85,null);
+                g.drawString(pathNode.getObstacle_height().toString(),middle_x,height-middle_y-85);
             }
+            pathNode=pathNode.getPathLink();
         }
-        return null;
+        
+        if(!depleted)
+            g.drawImage(available_point,x,height-y-150,null);
+        else
+            g.drawImage(depleted_point,x,height-y-150,null);
+        
+        g.setFont(new Font("TimesRoman",Font.PLAIN,72));
+        g.drawString(ID.toString(), x+50, height-y-50);
     }
-    
-    public void setThreshold(int threshold){
-        Point currentNode=head;
-        while(currentNode!=null){
-            currentNode.setColony_limit(threshold);
-            currentNode=currentNode.getPointLink();
-        }
+
+    //Uncomment the code in below method for extra feature 4
+    @Override
+    public void actionPerformed(ActionEvent e) {//action the regeneration of food
+        /*time++;//increment of the time by 1
+        if(time%100==0&&food<=food_limit) //if time required for food regenerate is reached and food is less than food limit
+            food++; //food regenerate
+        if(food>0)
+            depleted=false;*/
     }
-    
-    public LinkedList<Point> getColonies(){
-        LinkedList<Point> colonies=new LinkedList<>();
-        Point currentNode=head;
-        while(currentNode!=null){
-            if(currentNode.isColonised())
-                colonies.add(currentNode);
-            currentNode=currentNode.getPointLink();
-        }
-        return colonies;
-    }
-    
-    public Point get(int index){
-        if(index==0)
-            return head;
-        else{
-            Point currentNode=head;
-            for(int i=1;i<=index;i++)
-                currentNode=currentNode.getPointLink();
-            return currentNode;
-        }
-    }
-    
-    public void checkOverlapped(Point checkNode){  //to check the point if overlap the other point
-        Point currentNode=head;
-        boolean separated=true;
-        while(currentNode!=null){
-            if(currentNode!=checkNode){
-                separated=((int)Math.sqrt(Math.pow(checkNode.getX()-currentNode.getX(),2)+Math.pow(checkNode.getY()-currentNode.getY(),2)))>300;
-                if(!separated){
-                    checkNode.setCoordinate();
-                    currentNode=head;
-                    continue;
-                }
-            }
-            currentNode=currentNode.getPointLink();
-        }
-    }
-    
-    
-    //log the details of each point
-    public void mapdetails(){
-        Point currentNode=head;
-        while(currentNode!=null){
-            LinkedList<Kangaroo>kangaroo=currentNode.getKangaroo();
-            String detail="\n***********************"+"\nPoint : "+currentNode.getID()+"\nFood : "+currentNode.getFood()+"\nNumber of kangaroo : "+kangaroo.size();
-            for(int i=0;i<kangaroo.size();i++)
-                detail+="\n    "+kangaroo.get(i).getGender()+" "+kangaroo.get(i).getFoodAvailable();
-            detail+="\nColony : "+currentNode.isColonised()+"\nPath : ";
-            Path pathNode=currentNode.getPathLink();
-            while(pathNode!=null){
-                detail+="\n    "+pathNode.getPointLink().getID()+" "+pathNode.getObstacle_height();
-                pathNode=pathNode.getPathLink();
-        }
-            detail+="\n***********************";
-            logger.info(detail);
-            currentNode=currentNode.getPointLink();
-        }
-    }
+
 }
