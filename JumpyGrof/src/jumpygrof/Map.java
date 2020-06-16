@@ -5,7 +5,6 @@ import static jumpygrof.JumpyGrof.logger;
 
 public class Map<V extends Comparable<V>,E>{
     private Point head;
-    private Random r;
 
     public Map(){head=null;}
     
@@ -50,50 +49,45 @@ public class Map<V extends Comparable<V>,E>{
     }
     
     //addPath method for basic feature
-    public Path addPath(V from,V to,E obstacles_height,boolean back){
-        r=new Random();
-        if(hasPoint(from)==null||hasPoint(to)==null||!back&&isPath(to,from)){
+    public Path addPath(V from,V to,E obstacles_height,boolean back){//use back to identify it is forth or back
+        if(hasPoint(from)==null||hasPoint(to)==null||!back&&isPath(to,from)){//check whether the from and to is exist and the bidirectional path is present or not
             System.out.println("Invalid path");
             return null;
         }
-        else{
-            Point currentNode=head;
-            while(currentNode!=null){
-                if(from.compareTo((V)currentNode.getID())==0){
-                    Point temp=hasPoint(to);
-                    Path newNode=new Path(temp,obstacles_height,null,back);
-                    Path pathNode=(Path)currentNode.getPathLink();
-                    if(pathNode==null)
-                        currentNode.setPathLink(newNode);
-                    else{
-                        while(pathNode.getPathLink()!=null)
-                            pathNode=pathNode.getPathLink();
-                        pathNode.setPathLink(newNode);
-                    }
-                    if(!back)
-                        addPath(to,from,obstacles_height,true);
-                    return newNode;
+        Point currentNode=head;
+        while(currentNode!=null){
+            if(from.compareTo((V)currentNode.getID())==0){
+                Point temp=hasPoint(to);
+                Path newNode=new Path(temp,obstacles_height,null,back);
+                Path pathNode=(Path)currentNode.getPathLink();
+                if(pathNode==null)
+                    currentNode.setPathLink(newNode);
+                else{
+                    while(pathNode.getPathLink()!=null)
+                        pathNode=pathNode.getPathLink();
+                    pathNode.setPathLink(newNode);
                 }
-                else
-                    currentNode=currentNode.getPointLink();
+                if(!back)
+                    addPath(to,from,obstacles_height,!back); //recursive to add back path if the path added is forth
+                return newNode;
             }
+            else
+                currentNode=currentNode.getPointLink();
         }
         return null;
     }
     
     //addPath method for extra feature 2
     public Path addPath(V from,V to,E obstacles_height){
-        if(hasPoint(from)==null||hasPoint(to)==null){
+        if(hasPoint(from)==null||hasPoint(to)==null){//check whether from and to is exist
             System.out.println("Invalid path");
             return null;
         }
-        else if(isPath(to,from))
-            if(hasPath(to,from).getObstacle_height().equals(obstacles_height))
-                System.out.println("Cannot be same height");
-        else if(isPath(from,to)&&isPath(to,from))
-            System.out.println("The path is full");
-        else if(isPath(from,to))
+        else if(isPath(from,to))//check whether this path had already existed or not
             System.out.println("The path is existed");
+        else if(isPath(to,from))
+            if(hasPath(to,from).getObstacle_height().equals(obstacles_height))//check whether the height is same with another path or not
+                System.out.println("Cannot be same height");
         else{
             Point currentNode=head;
             while(currentNode!=null){
@@ -178,12 +172,12 @@ public class Map<V extends Comparable<V>,E>{
         }
     }
     
-    public int getColonies(){
-        int colonies=0;
+    public LinkedList<Point> getColonies(){
+        LinkedList<Point> colonies=new LinkedList<>();
         Point currentNode=head;
         while(currentNode!=null){
             if(currentNode.isColonised())
-                colonies++;
+                colonies.add(currentNode);
             currentNode=currentNode.getPointLink();
         }
         return colonies;
@@ -200,7 +194,7 @@ public class Map<V extends Comparable<V>,E>{
         }
     }
     
-    public void checkOverlapped(Point checkNode){
+    public void checkOverlapped(Point checkNode){  //to check the point if overlap the other point
         Point currentNode=head;
         boolean separated=true;
         while(currentNode!=null){
