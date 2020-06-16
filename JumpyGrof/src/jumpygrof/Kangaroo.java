@@ -255,11 +255,7 @@ public class Kangaroo{
     public void movement(ArrayList<Path> path){
         map.mapdetails();// log details of each point
         for(int i=0;i<path.size();i++){
-            if(colonised){
-                logger.info("\nKangaroo is colonised at point "+point.getID());
-                break;
-            }
-            logger.info("\nKangaroo is moving "+point.getID()+" to "+path.get(i).getPointLink().getID());
+            logger.info("\nKangaroo is moving "+point.getID()+" to "+path.get(i).getPointLink().getID()+", Required "+path.get(i).getFoodRequired(food_available)+"， Remaining "+path.get(i).getRemainingFood(food_available));
             Point destination=path.get(i).getPointLink();
              //calculate the total food required
             int food_required=path.get(i).getFoodRequired(food_available);
@@ -298,8 +294,10 @@ public class Kangaroo{
             try{
             Thread.sleep(400);
             }catch(InterruptedException e){};
-            if(colonised)//the kangaroo will not moved if it is colonized
+            if(colonised){
+                logger.info("\nKangaroo is colonised at point "+point.getID());//the kangaroo will not moved if it is colonized
                 break;
+            }
         }
         map.mapdetails();// log details of each point
     }
